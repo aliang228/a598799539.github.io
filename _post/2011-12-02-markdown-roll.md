@@ -1,8 +1,10 @@
 ---
 layout: post
-title: markdown 语法学习
+title:  TYPO.CSS
 description: Markdown 语法的一些知识点的记录，例如如何写标题，写列表，写 table 等。
 keywords: Markdown
+date:   2012-08-10 12:55:11
+category: "介绍"
 ---
 ###h 标题的写法
         #h1
