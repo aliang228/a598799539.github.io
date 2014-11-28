@@ -105,7 +105,7 @@ customLinks:
 #googleAnaly, your id link UA-12345678-X
 googleAnaly:
   config: true
-  id: 
+  id: UA-12345678-X
 
 #comment config
 disqus:
