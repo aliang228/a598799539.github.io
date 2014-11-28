@@ -42,7 +42,7 @@ timezone:      null
 title: Jekyll Theme
 description: Just another Jekyll theme design and code by zhanxin.info.
 keywords: Jekyll Theme
-url: http://pizn.github.io/kunka
+url: http://www.iprogrammr.com
 feed: /atom.xml
 favicon: http://jekyllrb.com/favicon.png
 
@@ -64,7 +64,7 @@ author:
     name: Jeff Chen
     email: chenxueping1819@gmail.com
     imageLink: http://tp2.sinaimg.cn/1695713881/180/1275217893/1
-    simpleIntro: It is common sense to take a method and try it. If it fails, admit it frankly and try another. But above all, try something. FRANKLIN D.ROOSEVELT
+    simpleIntro: Just Try IT.
     detailIntro:
       <p></p>
 
