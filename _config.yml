@@ -39,9 +39,9 @@ timezone:      null
 
 
 #Site config
-title: Jekyll Theme
+title: Just Try It!
 description: Just another Jekyll theme design and code by zhanxin.info.
-keywords: Jekyll Theme
+keywords: java, j2ee, ruby , rails, netty, grails, gradle
 url: http://www.iprogrammr.com
 feed: /atom.xml
 favicon: http://jekyllrb.com/favicon.png
@@ -64,7 +64,7 @@ author:
     name: Jeff Chen
     email: chenxueping1819@gmail.com
     imageLink: http://tp2.sinaimg.cn/1695713881/180/1275217893/1
-    simpleIntro: Just Try IT.
+    simpleIntro: 我是JeffChen，一名后端攻城狮。爱coding，爱折腾。
     detailIntro:
       <p></p>
 
