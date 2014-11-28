@@ -1,13 +1,11 @@
-##Kunka
+##a598799539.github.io
 
-> 这只是另外一个 Jekyll 主题文件。
+> 这只是另外一个 Jekyll 博客 。
 
-![kunka blog theme](images/blog.jpg)
+### 声明
 
-###使用方法
+本博客主题采用[KunKa by Zhanxin](http://www.zhanxin.info).
 
-* 把主题文件 clone 到你本地服务器，添加文章到 ```_posts``` 文件夹。
-* 修改 ```_config.yml```，里面有很多可以配置的选项。
-* 运行 ```jekyll serve```，浏览器打开 http://localhost:4000 便可以看到新的主题。
+关于主题的介绍，请移步[Jekyll 博客主题 Kunka](http://www.zhanxin.info/jekyll/2013-08-11-jekyll-theme-kunka.html)。
 
-更多的介绍，详见[Jekyll 博客主题 Kunka](http://www.zhanxin.info/jekyll/2013-08-11-jekyll-theme-kunka.html)。
+本博客文章如需转载请在底部添加原文地址链接。
