@@ -1,10 +1,10 @@
 ---
 layout: post
-title: 在ubuntu搭建一个自己的vpn
+title: 在ubuntu上搭建一个自己的免费vpn
 description: ubuntu上搭建vpn，介绍完整搭建过程。
-keywords: ubuntu vpn 免费vpn
-date:   2014-11-30 21：24
-category: "工具" "系统"
+keywords: [ubuntu,vpn,免费vpn]
+date:   2014-11-30 21:24
+category: "tools"
 ---
 
 在我们的日常工作和生活中经常会需要用到VPN来访问一些国外网站，
@@ -17,10 +17,10 @@ google的时候用下，现在也只用了几百兆。由于最近买了一个�
 ### 0 大前提 ###
 - 一台国外服务器，美国、香港云主机都可。
 - SSH工具:我的是fedora系统所以直接使用ssh，windows推荐使用securecrt
+
 ### 1 登入远程服务器，在root权限下操作 ###
 以下命令都是在执行`su`获取root权限后的操作，你也可以直接都在前面加上
 `sudo`
-
 
 ### 2、安装PPTPD
 
@@ -55,6 +55,7 @@ username pptpd password *
 
 **为了使服务器可以跳出局域网，所以我们还需要配置转发。**
 
+
 ### 5、设置DNS解析
 
 编辑pptpd-options文件(`vi /etc/ppp/pptpd-options`)
@@ -86,6 +87,7 @@ username pptpd password *
 
 ### 8、重新启动服务
     /etc/init.d/pptpd restart
+
 ### 9、安装完成
 至此，vpn安装完成。你只需在你需要访问外网的机器上(PC，手机),设置vpn连
 接，使用PPTP协议即可。畅快的上网吧！！
