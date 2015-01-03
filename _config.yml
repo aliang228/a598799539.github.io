@@ -58,6 +58,8 @@ nav:
     url: /contact.html
   - text: 友情链接
     url: /links.html
+  - text: API文档
+    url: http://docs.iprogrammr.com
 
 #Author config
 author:
