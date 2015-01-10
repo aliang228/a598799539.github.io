@@ -1,8 +1,7 @@
 ---
 layout: post
-title:   java.text.ParseException: Unparseable date -> 英语日期的转换
-description: 使用SimpleDateFormat进行日期格式化，对一个英语简写格式
-的日期进行转换，总是会报unparse date异常。
+title: [java.text.ParseException: Unparseable date]英语日期的转换
+description: 使用SimpleDateFormat进行日期格式化，对一个英语简写格式的日期进行转换，总是会报unparse date异常。
 keywords: [Unparseable date, 英语日期, MMM,SimpleDateFormat,parse]
 date:   2015-01-11 00:27:00
 category: "java"
