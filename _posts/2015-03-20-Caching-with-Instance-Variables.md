@@ -1,11 +1,13 @@
------------
+---
 layout: post
 title: 使用实例变量进行cache
 description: 使用实例变量进行cache
 keywords: [Rails, Railscast, Instance Variliables, Cache]
 date: 2015-03-20 09:27:00
 category: "Rails"
------------
+---
+
+
 
 ```ruby
 class ApplicationController < ActionController::Base
