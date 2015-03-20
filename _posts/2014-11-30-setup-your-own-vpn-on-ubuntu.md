@@ -24,19 +24,19 @@ google的时候用下，现在也只用了几百兆。由于最近买了一个�
 
 ### 2、安装PPTPD
 
-{% highlight bash %}
+```bash
 apt-get install pptpd
-{% endhighlight %}
+```
 
 ### 3、编辑pptpd.conf文件，设置服务器ip和远程客户端ip
 
 使用vim打开*pptpd.conf*文件(`vi /etc/pptpd.conf`)
 取消注释下面内容:
-{% highlight bash %}
+```bash
 option /etc/ppp/pptpd-options
 localip 192.168.0.1
 remoteip 192.168.0.234-238,192.168.0.245
-{% endhighlight %}
+```
 
 
 ### 4、添加登陆账户
@@ -44,10 +44,10 @@ remoteip 192.168.0.234-238,192.168.0.245
 修改/etc/ppp/chap-secrets文件(`vi /etc/ppp/chap-secrets`),添加一行用户
 设置：
 
-{% highlight bash  %}
+```bash
 ### 用户名 pptpd "密码" *
 username pptpd password *
-{% endhighlight %}
+```
 
 > 每个字段间直接用一个空格或tab隔开。
 星号(*)代表允许接入的ip可以是任意ip。

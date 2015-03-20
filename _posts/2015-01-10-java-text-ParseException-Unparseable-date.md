@@ -11,7 +11,7 @@ category: "java"
 需要将日期字符串“Dec 2014”转换成日期。
 
 ### 版本一
-{% highlight java %}
+```java
 import java.util.*;
 import java.io.*;
 import java.text.*;
@@ -26,7 +26,7 @@ public class Main
     }
 }
 
-{% endhighlight %}
+```
 编译执行后产生异常:
 > Exception in thread "main" java.text.ParseException: Unparseable date: "Jul/2014"
     at java.text.DateFormat.parse(DateFormat.java:357)
@@ -38,7 +38,7 @@ public class Main
 [stackoverflow](http://stackoverflow.com/questions/19861642/date-format-parse-exception-eee-mmm-dd-hhmmss-z-yyyy)上找到答案,
 在创建format时应该设定Locale.
 
-{% highlight java %}
+```java
 //仅修改第8行
 DateFormat format = new SimpleDateFormat("MMM yyyy", Locale.ENGLISH);
-{% endhighlight%}
+```

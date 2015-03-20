@@ -7,7 +7,7 @@ date: 2015-03-20 11:24
 category: "Rails"
 ---
 
-{% highlight ruby %}
+```ruby
 class Project < ActiveRecord::Base
   has_many :tasks
 end
@@ -19,6 +19,5 @@ end
 ## 查找某一个项目下的未完成任务, 按时间逆序排序
 @project = Project.find(param[:id])
 @task = @task.find_by_complete(false, order: "created_at DESC")
-
-{% endhighlight %}
+```
 

@@ -9,16 +9,16 @@ category: "Rails"
 
 以下是两个**find**方法，我们可以把它改成**find_by**形式。
 
-{% highlight ruby %}
+```ruby
 @tasks = Task.find(:all, :conditions => ['complete = ?', false])
 
 @tasks = Task.find(:first, :conditions => ['complete = ?', false], :order => 'created_at DESC')
-{% endhighlight %}
+```
 
 对应的`find_by`形式为:
 
-{% highlight ruby %}
+```ruby
 @task = Task.find_all_by_complete(false)
 
 @task = Task.find_by_complete(false, :order => "created_at DESC")
-{% endhighlight %}
+```
