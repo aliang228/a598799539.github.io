@@ -18,6 +18,7 @@ class Task < ActiveRecord::Base
   end
 ```
 那么我们在`controller`中就可以直接这么用:
+
 ```ruby
 @tasks = Task.find_incomplete
 ```
