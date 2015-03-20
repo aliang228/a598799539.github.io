@@ -13,8 +13,10 @@ category: "Rails"
 
 @tasks = Task.find(:first, :conditions => ['complete = ?', false], :order => 'created_at DESC')
 {% endhighlight %}
+
 对应的`find_by`形式为:
-{% highlight ruby%}
+
+{% highlight ruby %}
 @task = Task.find_all_by_complete(false)
 
 @task = Task.find_by_complete(false, :order => "created_at DESC")
