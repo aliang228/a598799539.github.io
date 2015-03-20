@@ -4,6 +4,7 @@ title: 把常用的find写入model
 description: 对于一些常用的find查询我们应该写入model中，以降低重复工作和方便以后维护修改
 keywords: [find,rails,model,move]
 date: 2015-03-20 13:46
+category: "Rails"
 ---
 
 对于一些比较常用的find查询，我们应该写入model中，以降低重复工作和方便日后维护修改。
