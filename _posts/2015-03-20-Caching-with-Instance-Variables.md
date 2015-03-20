@@ -7,9 +7,7 @@ date: 2015-03-20 09:27:00
 category: "Rails"
 ---
 
-
-
-{ % highlight ruby % }
+{% highlight ruby %}
 class ApplicationController < ActionController::Base
   def current_user
     User.find(session[:user_id])
@@ -20,6 +18,6 @@ end
 以上代码`User.find(session[:user_id])`在每次`current_user`被调用都将会执行一次查询。
 如果改成如下将可以避免这个问题。
 
-{ % highlight ruby % }
+{% highlight ruby %}
 @current_user ||= User.find(sessions[:user_id])
-{ % endhighlight % }
+{% endhighlight %}
