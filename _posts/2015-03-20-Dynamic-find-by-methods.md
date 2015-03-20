@@ -8,6 +8,7 @@ category: "Rails"
 ---
 
 以下是两个**find**方法，我们可以把它改成**find_by**形式。
+
 {% highlight ruby %}
 @tasks = Task.find(:all, :conditions => ['complete = ?', false])
 
