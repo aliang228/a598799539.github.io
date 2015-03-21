@@ -1,6 +1,6 @@
 ---
 layout: post
-title: [Java性能优化]02 单例模式
+title: "[Java性能优化]02 单例模式"
 description: 单例模式，单例模式的几个特点,单例模式的几种写法
 keywords: [java,性能，单例模式，饿汉式，懒汉式，双重校验，静态内部类，枚举]
 date:   2015-03-16 22:15

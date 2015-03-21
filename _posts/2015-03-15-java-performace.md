@@ -1,6 +1,6 @@
 ---
 layout: post
-title: [Java性能优化]01 Java性能概述
+title: "[Java性能优化]01 Java性能概述"
 description: Java性能概述，程序性能的几个表现方面,性能的几个参考指标,木桶原理,Amdahl定律
 keywords: [java,性能，参考指标，Amdahl定律]
 date:   2015-03-15 22:15
