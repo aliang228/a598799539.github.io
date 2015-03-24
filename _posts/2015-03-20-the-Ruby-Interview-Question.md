@@ -85,7 +85,75 @@ proc_test  # return nil  不打印hello
 
 ### 4 In Ruby, which is generally the better option: a recursive function or an iterative one?
 
+首先我们说明一下递归(recursive)和迭代(iterative):
+
+**递归**:一个树结构，每个分支都探究到最远，发现无法继续走的时候往回走，每个节点只会访问一次。
+
+**迭代**:一个环结构，每次迭代都是一个圈，不会落掉其中的每一步，然后不断循环每个节点都会被循环访问。
+
+由此我们可以看出`ruby`中更加常用的选择是`迭代`，就像`.each`,`.times`,`.map`等都是迭代循环的形式。
+
+### 5 What are #method_missing and #send? Why are they useful?
+- method_missing，顾名思义，在方法找不到时被调用。有了这个强大元编程工具，我们就能创建动态的方法，比如ActiveRecord中的动态finder
+
+```ruby
+class Legislator
+  # Pretend this is a real implementation
+  def find(conditions = {})
+  end
+  
+  # Define on self, since it's  a class method
+  def self.method_missing(method_sym, *arguments, &block)
+    # the first argument is a Symbol, so you need to_s it if you want to pattern match
+    if method_sym.to_s =~ /^find_by_(.*)$/
+      find($1.to_sym => arguments.first)
+    else
+      super
+    end
+  end
+end
+```
+- send，也是一个动态方法调用的强大工具，它的作用的将一个方法以参数的形式传递给对象。
+
+```ruby
+class Box
+  def open_1
+    puts "open box"
+  end
+
+  def open_2
+    puts "open lock and open box"
+  end
+
+  def open_3
+    puts "It's a open box"
+  end
+
+  def open_4
+    puts "I can't open box"
+  end
+
+  def open_5
+    puts "Oh shit box!"
+  end 
+end
+
+box = Box.new
+
+box.send("open_#{num}")
+```
+
+### 6 What are the various Ruby runtimes, and how are they different?
+- mruby: ruby嵌入式版本。
+- CRuby: Matz's Ruby Interpreter(MRI),C语言实现
+- JRuby: 基于JVM实现
+- Rubinius: 基于LLVM(Low Level Virtual Machine)
+- Opal: turn Ruby into JavaScript
+- RubyMotion: write Cocoa native apps in Ruby
+### 7 Define "Matz"
+ruby之父,松本行弘,日本人
 
 ### 参考文档
 - [1][What Is the Difference Between a Block, a Proc, and a Lambda in Ruby?](http://awaxman11.github.io/blog/2013/08/05/what-is-the-difference-between-a-block/)
-- [2] 
+- [2][Using method_missing and respond_to? to create dynamic methods](http://technicalpickles.com/posts/using-method_missing-and-respond_to-to-create-dynamic-methods/)
+- [3][浅析Ruby里的几个动态方法（一），send方法](https://ruby-china.org/topics/4313) 
