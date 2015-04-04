@@ -3,6 +3,7 @@ layout: post
 title: 使用filter_parameter_logging过滤敏感日志
 description: 在rails的日志打印中，我们经常需要对信息进行日志打印过滤，如密码一类的信息。
 date: 2015-03-31 08:35
+keywords: [filter_parameter_logging,过滤后的日志,Rails,密码过滤]
 category: [Rails]
 ---
 
