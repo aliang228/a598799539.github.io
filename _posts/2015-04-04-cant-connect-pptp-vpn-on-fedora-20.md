@@ -5,7 +5,7 @@ description: 刚安装了Fedora 20系统，想连接自己搭建的vpn，发现�
 不上。终于找到解决办法。
 date: 2015-04-04 08:49
 keywords: [Fedora,PPTP,VPN,连接不上]
-category: [Fedora]
+category: "Fedora"
 ---
 
 刚安装了Fedora 20系统，想连接自己搭建的vpn，发现总是连接
