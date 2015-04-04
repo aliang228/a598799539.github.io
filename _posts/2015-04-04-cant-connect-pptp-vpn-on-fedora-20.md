@@ -22,7 +22,7 @@ service 方式
 
 关闭： `service iptables stop`
 
-```shell
+```bash
 $ sudo systemctl stop firewalld.service  ## 停止防火墙
 $ systemctl disable firewalld.service 
 ```
