@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Rails to_proc(`&`)"
+title: "Rails to_proc(&)"
 description: the Symbol#to_proc feature Rails adds allows you to do simple blocks very quickly and easily
 keyword: [to_proc, rails, ruby]
 date: 2015-03-30 08:01
