@@ -1,10 +1,10 @@
 ---
 layout: post
-title: Ferdora Change Default Java Version
-description:  Ferdora Change Default Java Version
+title: Fedora Change Default Java Version
+description:  Fedora Change Default Java Version
 date: 2015-05-24 23:58
-keywords: [java,Ferdora,Versions]
-category: "Ferdora"
+keywords: [java,Fedora,Versions]
+category: "Fedora"
 ---
 
 Type the following command in the terminal and chose your own java version:
