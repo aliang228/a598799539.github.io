@@ -61,8 +61,6 @@ nav:
     url: /contact.html
   - text: 友情链接
     url: /links.html
-  - text: 读书
-    url: http://read.douban.com/people/57408334/
 #Author config
 author:
     name: Jeff Chen
