@@ -23,4 +23,4 @@ node_modules
 _site
 sea-modules
 .cache
-Gem.lock
+Gemfile.lock
