@@ -5,6 +5,9 @@ description: 单例模式，单例模式的几个特点,单例模式的几种写
 keywords: [java,性能，单例模式，饿汉式，懒汉式，双重校验，静态内部类，枚举]
 date:   2015-03-16 22:15
 category: "java"
+tags:
+  - java
+  - 单例模式
 ---
 
 设计模式是前人工作的总结和提炼，是对某一特定问题的成熟解决方案。
@@ -15,33 +18,33 @@ category: "java"
 
 ## 2 饿汉式(线程不安全)
 ```java
-public class Singleton {  
-    private static Singleton instance;  
-    private Singleton (){}  
-  
-    public static Singleton getInstance() {  
-        if (instance == null) {  
-            instance = new Singleton();  
-        }  
-        return instance;  
-    }  
-} 
+public class Singleton {
+    private static Singleton instance;
+    private Singleton (){}
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
 ```
 显然上面这种lazy loading的方法， 当在多线程条件下将会产生多个实例。
 
 ## 3 饿汉式(线程安全)
 ```java
-public class Singleton {  
-    private static Singleton instance = null;  
-    private Singleton (){}  
-  
-    public static synchronized Singleton getInstance() {  
+public class Singleton {
+    private static Singleton instance = null;
+    private Singleton (){}
+
+    public static synchronized Singleton getInstance() {
         if (instance == null) {
             instance = new Singleton();
-        }  
+        }
         return instance;
-    }  
-} 
+    }
+}
 ```
 虽然这是线程安全的，但是不仅创建的时候会同步，甚至每次读取的时候都必须同步。
 这样严重影响程序的运行效率。
@@ -68,11 +71,11 @@ public class Singleton{
 
 ## 5 饿汉式
 ```java
-public class Singleton {  
-    private static Singleton instance = new Singleton();  
-    private Singleton (){}  
-    public static Singleton getInstance() {  
-        return instance;  
+public class Singleton {
+    private static Singleton instance = new Singleton();
+    private Singleton (){}
+    public static Singleton getInstance() {
+        return instance;
     }
 }
 ```
@@ -82,23 +85,23 @@ public class Singleton {
 
 ## 6 静态内部类
 ```java
-public class Singleton {  
-    private static class SingletonHolder {  
-        private static final Singleton INSTANCE = new Singleton();  
+public class Singleton {
+    private static class SingletonHolder {
+        private static final Singleton INSTANCE = new Singleton();
     }
-    private Singleton (){}  
-    public static final Singleton getInstance() {  
-        return SingletonHolder.INSTANCE;  
+    private Singleton (){}
+    public static final Singleton getInstance() {
+        return SingletonHolder.INSTANCE;
     }
-}  
+}
 ```
 上面这种方式，使用JVM本身机制保证了线程安全问题；由于 SingletonHolder 是私有的，除了 getInstance() 之外没有办法访问它，因此它只有在getInstance()被调用时才会真正创建；同时读取实例的时候不会进行同步，没有性能缺陷；也不依赖 JDK 版本。
 
 ## 7 枚举
 ```java
-public enum Singleton {  
-    INSTANCE;  
-}  
+public enum Singleton {
+    INSTANCE;
+}
 ```
 默认枚举实例的创建是线程安全的，所以不需要担心线程安全的问题。是不是有点简单了？下面来点详细代码：
 ```java

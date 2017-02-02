@@ -5,6 +5,8 @@ description: 享元模式是为数不多的、只为提升系统性能而生的�
 keywords: [享元模式, FlyWeight,Fly Weight, Java]
 date:   2015-06-07  15:50:00
 category: "java"
+tags:
+  - 享元模式
 ---
 
 享元模式，顾名思义：共享元对象。如果在一个系统中存在多个相同的对象，那么只需要共享一份对象的拷贝，而不必

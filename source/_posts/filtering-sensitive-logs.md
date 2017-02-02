@@ -5,6 +5,9 @@ description: 在rails的日志打印中，我们经常需要对信息进行日�
 date: 2015-03-31 08:35
 keywords: [filter_parameter_logging,过滤后的日志,Rails,密码过滤]
 category: [Rails]
+tags:
+  - filter_parameter_logging
+  - Rails
 ---
 
 在rails的日志打印中，我们经常需要对信息进行日志打印过滤，如密码一类的信息。
@@ -21,7 +24,7 @@ User Create (0.5ms)   INSERT INTO "users" ("name", "updated_at", "password_confi
 
 ```ruby
 class ApplicationController < ActionController::Base
-  filter_parameter_logging "password" 
+  filter_parameter_logging "password"
 end
 ```
 过滤后的日志:

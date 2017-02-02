@@ -5,6 +5,8 @@ description: "the ruby interview question, ruby面试题"
 keyword: [ruby,interview,question,面试题]
 date: 2015-03-20 15:52
 category: "Jobs"
+tags:
+  - ruby
 ---
 
 下面是对[Rails Interview Questions](https://github.com/afeld/rails_interview_questions)中的
@@ -60,7 +62,7 @@ end
 proc_test  # return nil  不打印hello
 ```
 ### 2 How do you sort an Array of objects by paticular attributes? What is better way to do sorting with ActiveRecord?
-首先我们来回答第一问：怎么通过某个字段来对对象数组排序？  
+首先我们来回答第一问：怎么通过某个字段来对对象数组排序？
 假设我们有一个对象数组`@users`，我们需要让他对字段`name`排序，则我们可以：
 
 ```ruby
@@ -76,7 +78,7 @@ proc_test  # return nil  不打印hello
 下面列举我喜欢的几个常用的gems及它的可替代备选方案
 
 - `Rails`基于MVC设计模式的高效Web开发框架。备选方案:`Sinatra`:轻量级的web开发选择
-- `jquery-rails`:jQuery for rails. 
+- `jquery-rails`:jQuery for rails.
 - `haml-rails`:简化view层的编写，少了麻烦重复的标签。可替代:`erb-rails`
 - `devise`:用户认证插件。
 - `rspec-rails`:test
@@ -101,7 +103,7 @@ class Legislator
   # Pretend this is a real implementation
   def find(conditions = {})
   end
-  
+
   # Define on self, since it's  a class method
   def self.method_missing(method_sym, *arguments, &block)
     # the first argument is a Symbol, so you need to_s it if you want to pattern match
@@ -135,7 +137,7 @@ class Box
 
   def open_5
     puts "Oh shit box!"
-  end 
+  end
 end
 
 box = Box.new
@@ -157,4 +159,4 @@ ruby之父,松本行弘,日本人
 ### 参考文档
 - [1][What Is the Difference Between a Block, a Proc, and a Lambda in Ruby?](http://awaxman11.github.io/blog/2013/08/05/what-is-the-difference-between-a-block/)
 - [2][Using method_missing and respond_to? to create dynamic methods](http://technicalpickles.com/posts/using-method_missing-and-respond_to-to-create-dynamic-methods/)
-- [3][浅析Ruby里的几个动态方法（一），send方法](https://ruby-china.org/topics/4313) 
+- [3][浅析Ruby里的几个动态方法（一），send方法](https://ruby-china.org/topics/4313)

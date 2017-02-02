@@ -5,6 +5,8 @@ description: 代理模式之动态代理，使用JDK动态代理简化简单代�
 keywords: [代理模式, Proxy, Java, JDK,invoke, newProxyInstance]
 date:   2015-06-07  11:34:00
 category: "java"
+tags:
+  - 动态代理
 ---
 
 在[上一篇文章](/java/2015/06/06/java-design-pattern-proxy.html)中,我们讲到了简单的代理模式实现。
@@ -67,9 +69,9 @@ public class DBQuery implements IDBQuery  {
 
 ```java
 public class InvocationDBQueryHandler implements InvocationHandler {
-    
+
     private DBQuery dbQuery = null;
-    
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {

@@ -5,6 +5,8 @@ description: the Symbol#to_proc feature Rails adds allows you to do simple block
 keyword: [to_proc, rails, ruby]
 date: 2015-03-30 08:01
 category: "Rails"
+tags:
+  - to_proc
 ---
 
 Rails中有一个很棒的特性:`使用&进行块转换`，他可以让我们方便快速的写出块。

@@ -2,9 +2,12 @@
 layout: post
 title: Find联合查询
 description: 使用find联合多个model进行查询
-keywords: [find_ny, association, rails, 联合查询]
+keywords: [find_by, association, rails, 联合查询]
 date: 2015-03-20 11:24
 category: "Rails"
+tags:
+  - rails
+  - 联合查询
 ---
 
 ```ruby

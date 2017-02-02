@@ -5,6 +5,8 @@ description: 装饰者模式充分利用委托机制，降低耦合，构建一�
 keywords: [装饰者模式,Decorator, Java]
 date:   2015-06-21  16:18:00
 category: "java"
+tags:
+  - 装饰者模式
 ---
 
 装饰者模式拥有一种非常巧妙的结构，它可以动态添加对象功能。

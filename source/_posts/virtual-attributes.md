@@ -5,6 +5,8 @@ description: 经常我们会用到一些有数据库中多个字段组合而成�
 date: 2015-04-07 08:45
 keywords: [model,虚拟字段,rails,virtual attributes]
 category: "Rails"
+tags:
+  - 虚拟字段
 ---
 
 经常我们会用到一些有数据库中多个字段组合而成的信息，如姓名（姓+    名），地址（省+市+区+街道）.

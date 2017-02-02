@@ -5,6 +5,8 @@ description: 代理模式的简单介绍和Java实现。
 keywords: [代理模式, Proxy, Java]
 date:   2015-06-06  22:33:00
 category: "java"
+tags:
+  - 代理模式
 ---
 
 ### 1 简单介绍
@@ -31,12 +33,12 @@ public class DBQuery implements IDBQuery  {
             e.printStackTrace();
         }
     }
-    
+
     @Override
     public String query() {
         return "begin query...";
     }
-    
+
 }
 
 ```

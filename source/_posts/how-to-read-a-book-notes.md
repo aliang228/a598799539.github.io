@@ -5,10 +5,12 @@ description: 《如何阅读一本书》读书笔记
 keywords: [如何阅读一本书,读书笔记, 艾德勒]
 date:   2015-08-22  09:34:00
 category: "读书笔记"
+tags:
+  - 如何阅读一本书
 ---
-[《如何阅读一本书》](http://book.douban.com/subject/1013208/) 
+[《如何阅读一本书》](http://book.douban.com/subject/1013208/)
 
-作者: [美] 莫提默·J. 艾德勒 / 查尔斯·范多伦 
+作者: [美] 莫提默·J. 艾德勒 / 查尔斯·范多伦
 
 ![how to read a book](http://img4.douban.com/mpic/s1670978.jpg)
 

@@ -5,6 +5,8 @@ description: 使用with_scope扩展查询
 keyword: [with_scope, rails, ruby, find]
 date: 2015-03-20 14:10
 category: "Rails"
+tags:
+  - with_scope
 ---
 
 [上一篇](Move-Find-into-Model.html)我们讲到将常用的find查询写入model中，
@@ -18,7 +20,7 @@ category: "Rails"
 
 ```ruby
 def self.find_incomplete options={}
-  with_scope :find => options do 
+  with_scope :find => options do
     find_all_by_complete(false, order: 'created_at DESC')
   end
 end

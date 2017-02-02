@@ -5,6 +5,8 @@ description: ubuntu上搭建vpn，介绍完整搭建过程。
 keywords: [ubuntu,vpn,免费vpn]
 date:   2014-11-30 21:24
 category: "tools"
+tags:
+  - vpn
 ---
 
 在我们的日常工作和生活中经常会需要用到VPN来访问一些国外网站，
@@ -82,7 +84,7 @@ username pptpd password *
 
 - 使用iptables-save保存规则：`iptables-save > /etc/iptables-rules`
 - 修改*/etc/network/interfaces* 文件，找到 eth0 部分，在eth0设置最末尾
-加上下面这句：`pre-up iptables-restore < /etc/iptables-rules` 
+加上下面这句：`pre-up iptables-restore < /etc/iptables-rules`
 这样当网卡 eth0 被加载的时候就会自动载入我们预先用iptables-save 保存下的配置。
 
 ### 8、重新启动服务

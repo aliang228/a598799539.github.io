@@ -5,6 +5,9 @@ description: 使用find_by进行多条件动态查询
 keywords: [Rails, find_by, ruby]
 date: 2015-03-20 10:21
 category: "Rails"
+tags:
+  - Rails
+  - find_by
 ---
 
 以下是两个**find**方法，我们可以把它改成**find_by**形式。
