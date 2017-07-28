@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.iprogrammr.com/"/>
-  <updated>2017-07-28T05:06:10.093Z</updated>
+  <updated>2017-07-28T08:09:14.673Z</updated>
   <id>http://www.iprogrammr.com/</id>
   
   <author>
@@ -14,6 +14,106 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Eclipse常用快捷键</title>
+    <link href="http://www.iprogrammr.com/07/28/2017/Eclipse-Usual-KeyShot.html"/>
+    <id>http://www.iprogrammr.com/07/28/2017/Eclipse-Usual-KeyShot.html</id>
+    <published>2017-07-28T11:10:00.000Z</published>
+    <updated>2017-07-28T08:09:14.673Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="编辑"><a href="#编辑" class="headerlink" title="编辑"></a>编辑</h3><ul>
+<li><code>Ctrl+1</code>    快速修复（最经典的快捷键,就不用多说了，可以解决很多问题，比如import类、try catch包围等）</li>
+<li><code>Ctrl+Shift+F</code>    格式化当前代码</li>
+<li><code>Ctrl+Shift+M</code>    添加类的import导入</li>
+<li><code>Ctrl+Shift+O</code>    组织类的import导入（既有Ctrl+Shift+M的作用，又可以帮你去除没用的导入，很有用）</li>
+<li><code>Ctrl+Y</code>    重做（与撤销Ctrl+Z相反）</li>
+<li><code>Alt+/</code>    内容辅助（帮你省了多少次键盘敲打，太常用了）</li>
+<li><code>Ctrl+D</code>    删除当前行或者多行</li>
+<li><code>Alt+↓</code>    当前行和下面一行交互位置（特别实用,可以省去先剪切,再粘贴了）</li>
+<li><code>Alt+↑</code>    当前行和上面一行交互位置（同上）</li>
+<li><code>Ctrl+Alt+↓</code>    复制当前行到下一行（复制增加）</li>
+<li><code>Ctrl+Alt+↑</code>    复制当前行到上一行（复制增加）</li>
+<li><code>Shift+Enter</code>    在当前行的下一行插入空行（这时鼠标可以在当前行的任一位置,不一定是最后）</li>
+<li><code>Ctrl+/</code>    注释当前行,再按则取消注释</li>
+</ul>
+<h3 id="选择"><a href="#选择" class="headerlink" title="选择"></a>选择</h3><ul>
+<li><code>Alt+Shift+↑</code>    选择封装元素</li>
+<li><code>Alt+Shift+←</code>    选择上一个元素</li>
+<li><code>Alt+Shift+→</code>    选择下一个元素</li>
+<li><code>Shift+←</code>    从光标处开始往左选择字符</li>
+<li><code>Shift+→</code>    从光标处开始往右选择字符</li>
+<li><code>Ctrl+Shift+←</code>    选中光标左边的单词</li>
+<li><code>Ctrl+Shift+→</code>    选中光标又边的单词</li>
+</ul>
+<h3 id="移动"><a href="#移动" class="headerlink" title="移动"></a>移动</h3><ul>
+<li><code>Ctrl+←</code>    光标移到左边单词的开头，相当于vim的b</li>
+<li><code>Ctrl+→</code>    光标移到右边单词的末尾，相当于vim的e</li>
+</ul>
+<h3 id="搜索"><a href="#搜索" class="headerlink" title="搜索"></a>搜索</h3><ul>
+<li><code>Ctrl+K</code>    参照选中的Word快速定位到下一个（如果没有选中word，则搜索上一次使用搜索的word）</li>
+<li><code>Ctrl+Shift+K</code>    参照选中的Word快速定位到上一个</li>
+<li><code>Ctrl+J</code>    正向增量查找（按下- `Ctrl+J后,你所输入的每个字母编辑器都提供快速匹配定位到某个单词,如果没有,则在状态栏中显示没有找到了,查一个单词时,特别实用,要退出这个模式，按escape建）</li>
+<li><code>Ctrl+Shift+J</code>    反向增量查找（和上条相同,只不过是从后往前查）</li>
+<li><code>Ctrl+Shift+U</code>    列出所有包含字符串的行</li>
+<li><code>Ctrl+H</code>    打开搜索对话框</li>
+<li><code>Ctrl+G</code>    工作区中的声明</li>
+<li><code>Ctrl+Shift+G</code>    工作区中的引用</li>
+</ul>
+<h3 id="导航"><a href="#导航" class="headerlink" title="导航"></a>导航</h3><ul>
+<li><code>Ctrl+Shift+T</code>    搜索类（包括工程和关联的第三jar包）</li>
+<li><code>Ctrl+Shift+R</code>    搜索工程中的文件</li>
+<li><code>Ctrl+E</code>    快速显示当前Editer的下拉列表（如果当前页面没有显示的用黑体表示）</li>
+<li><code>F4</code>    打开类型层次结构</li>
+<li><code>F3</code>    跳转到声明处</li>
+<li><code>Alt+←</code>    前一个编辑的页面</li>
+<li><code>Alt+→</code>    下一个编辑的页面（当然是针对上面那条来说了）</li>
+<li><code>Ctrl+PageUp/PageDown</code>    在编辑器中，切换已经打开的文件</li>
+</ul>
+<h3 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h3><ul>
+<li><code>F5</code>    单步跳入</li>
+<li><code>F6</code>    单步跳过</li>
+<li><code>F7</code>    单步返回</li>
+<li><code>F8</code>    继续</li>
+<li><code>Ctrl+Shift+D</code>    显示变量的值</li>
+<li><code>Ctrl+Shift+B</code>    在当前行设置或者去掉断点</li>
+<li><code>Ctrl+R</code>    运行至行(超好用，可以节省好多的断点)</li>
+</ul>
+<h3 id="重构"><a href="#重构" class="headerlink" title="重构"></a>重构</h3><ul>
+<li><code>Alt+Shift+R</code>    重命名方法名、属性或者变量名 （是我自己最爱用的一个了,尤其是变量和类的Rename,比手工方法能节省很多劳动力）</li>
+<li><code>Alt+Shift+M</code>    把一段函数内的代码抽取成方法 （这是重构里面最常用的方法之一了,尤其是对一大堆泥团代码有用）</li>
+<li><code>Alt+Shift+C</code>    修改函数结构（比较实用,有N个函数调用了这个方法,修改一次搞定）</li>
+<li><code>Alt+Shift+L</code>    抽取本地变量（ 可以直接把一些魔法数字和字符串抽取成一个变量,尤其是多处调用的时候）</li>
+<li><code>Alt+Shift+F</code>    把Class中的local变量变为field变量 （比较实用的功能）</li>
+<li><code>Alt+Shift+I</code>    合并变量（可能这样说有点不妥Inline）</li>
+<li><code>Alt+Shift+V</code>    移动函数和变量（不怎么常用）</li>
+<li><code>Alt+Shift+Z</code>    重构的后悔药（Undo）</li>
+</ul>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ul>
+<li><code>Alt+Enter</code>    显示当前选择资源的属性，windows下的查看文件的属性就是这个快捷键，通常用来查看文件在windows中的实际路径</li>
+<li><code>Ctrl+↑</code>    文本编辑器 上滚行</li>
+<li><code>Ctrl+↓</code>    文本编辑器 下滚行</li>
+<li><code>Ctrl+M</code>    最大化当前的Edit或View （再按则反之）</li>
+<li><code>Ctrl+O</code>    快速显示 OutLine（不开Outline窗口的同学，这个快捷键是必不可少的）</li>
+<li><code>Ctrl+T</code>    快速显示当前类的继承结构</li>
+<li><code>Ctrl+W</code>    关闭当前Editer（windows下关闭打开的对话框也是这个，还有qq、旺旺、浏览器等都是）</li>
+<li><code>Ctrl+L</code>    文本编辑器 转至行</li>
+<li><code>F2</code>    显示工具提示描述</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      介绍一些eclipse常用，能够提升编码效率的快捷键。
+    
+    </summary>
+    
+      <category term="Eclipse" scheme="http://www.iprogrammr.com/categories/Eclipse/"/>
+    
+    
+      <category term="eclipse" scheme="http://www.iprogrammr.com/tags/eclipse/"/>
+    
+  </entry>
   
   <entry>
     <title>Apache HttpCore in Action</title>
@@ -738,67 +838,6 @@
       <category term="java" scheme="http://www.iprogrammr.com/tags/java/"/>
     
       <category term="单例模式" scheme="http://www.iprogrammr.com/tags/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>[Java性能优化]01 Java性能概述</title>
-    <link href="http://www.iprogrammr.com/03/15/2015/java-performace.html"/>
-    <id>http://www.iprogrammr.com/03/15/2015/java-performace.html</id>
-    <published>2015-03-15T14:15:00.000Z</published>
-    <updated>2017-07-10T03:01:41.745Z</updated>
-    
-    <content type="html"><![CDATA[<p>web服务器的两个性能参数：服务器响应时间，吞吐量。</p>
-<h2 id="1-程序性能的几个表现方面"><a href="#1-程序性能的几个表现方面" class="headerlink" title="1 程序性能的几个表现方面"></a>1 程序性能的几个表现方面</h2><ul>
-<li>执行速度</li>
-<li>内存分配</li>
-<li>启动时间</li>
-<li>负载承受能力</li>
-</ul>
-<h2 id="2-性能的几个参考指标"><a href="#2-性能的几个参考指标" class="headerlink" title="2 性能的几个参考指标"></a>2 性能的几个参考指标</h2><ul>
-<li>执行时间</li>
-<li>CPU时间</li>
-<li>内存分配</li>
-<li>磁盘吞吐量</li>
-<li>网络吞吐量</li>
-<li>响应时间</li>
-</ul>
-<h2 id="3-木桶原理"><a href="#3-木桶原理" class="headerlink" title="3 木桶原理"></a>3 木桶原理</h2><p>根据木桶原理，系统的最终性能取决于系统中性能表现最差的组件。<br>因此，我们应该更注重最差性能的组件优化。</p>
-<p><strong>最可能成为瓶颈的集中资源</strong>：<br><code>磁盘I/O</code>、<code>网络操作</code>、<code>CPU</code>、<code>异常</code>、<code>数据库</code>、<code>锁竞争</code>、<code>内存</code>。</p>
-<h2 id="4-Amdahl定律"><a href="#4-Amdahl定律" class="headerlink" title="4 Amdahl定律"></a>4 Amdahl定律</h2><ul>
-<li>加速比</li>
-</ul>
-<p>加速比 = 优化前耗时/优化后耗时</p>
-<ul>
-<li>Amdahl定律<br>Speedup &lt;= 1/(F+(1-F)/N)</li>
-</ul>
-<p>Speedup：加速比<br>F: 系统串行化比重<br>N: CPU数量</p>
-<p>根据Amdahl定律，使用多核CPU对系统进行优化，优化的效果取决于CPU的数量及系统中串行化的程序比重。CPU越多，串行化比重越低，则优化效果越好。</p>
-<h2 id="5-性能调优的几个层次"><a href="#5-性能调优的几个层次" class="headerlink" title="5 性能调优的几个层次"></a>5 性能调优的几个层次</h2><ol>
-<li>设计调优</li>
-<li>代码调优</li>
-<li>JVM调优</li>
-<li>数据库调优</li>
-<li>操作系统调优</li>
-</ol>
-<h2 id="6-基本调优策略和手段"><a href="#6-基本调优策略和手段" class="headerlink" title="6 基本调优策略和手段"></a>6 基本调优策略和手段</h2><ul>
-<li><p>优化的步骤<br>明确的性能目标–&gt; 优化后的充分测试和性能监控</p>
-</li>
-<li><p>注意事项： 要有充分明确的优化目标，不要为了优化而优化。</p>
-</li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      Java性能概述，程序性能的几个表现方面,性能的几个参考指标,木桶原理,Amdahl定律
-    
-    </summary>
-    
-      <category term="java" scheme="http://www.iprogrammr.com/categories/java/"/>
-    
-    
-      <category term="性能优化" scheme="http://www.iprogrammr.com/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/"/>
     
   </entry>
   
