@@ -19,9 +19,9 @@ rss: default
 menu:
   Home: /
   Archives: /archives/
-  # Tags: /tags
-  # Categories: /categories
-  # About: /about
+  Tags: /tags
+  Categories: /categories
+  About: /about
 
 # ===========================================
 # Theme Settings
@@ -31,11 +31,11 @@ menu:
 theme:
   color: Default
   toc: true
-  search: false
-  fancybox: false
+  search: true
+  fancybox: true
 
 copyright:
-  enable: false
+  enable: true
   # https://creativecommons.org/
   license: '本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可'
 
@@ -49,13 +49,13 @@ reward:
 # Social links Settings
 # ===========================================
 social:
-  email: your@email.com
+  email: chenxueping1819@gmail.com
   stack-overflow:
   twitter:
   facebook:
   linkedin:
   google:
-  github:
+  github: https://github.com/a598799539
   weibo:
   zhihu:
   pocket:

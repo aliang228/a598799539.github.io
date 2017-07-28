@@ -15,7 +15,7 @@ since: 2015
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: http://www.iprogrammr.com
 root: /
-permalink: :year/:month/:day/:title.html
+permalink: :month/:day/:title.html
 permalink_defaults:
 
 # Directory
