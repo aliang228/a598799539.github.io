@@ -1,0 +1,833 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+    
+    <entry>
+      <title><![CDATA[Apache HttpCore in Action]]></title>
+      <url>http://www.iprogrammr.com/07/27/2017/Apache-HttpCore-in-Action.html</url>
+      <content type="html"><![CDATA[<h2 id="1-HttpCore是什么？"><a href="#1-HttpCore是什么？" class="headerlink" title="1 HttpCore是什么？"></a>1 HttpCore是什么？</h2><p>HttpCore是对HTTP协议的基础封装的一套组件。</p>
+<ul>
+<li>可以用它来建立客户端、代理、服务端Http服务</li>
+<li>支持同步异步服务</li>
+<li>一系列基于阻塞和非阻塞IO模型</li>
+</ul>
+<h2 id="2-HTTP消息简析"><a href="#2-HTTP消息简析" class="headerlink" title="2 HTTP消息简析"></a>2 HTTP消息简析</h2><p>一个HTTP消息包含Header和可选的Body.</p>
+<ul>
+<li>请求头(Request Header)由一个请求行和一系列的头字段组成。</li>
+<li>响应头(Response Header)由一个状态行和一系列的头字段组成。</li>
+<li>HTTP消息必须包含HTTP版本。</li>
+</ul>
+<h3 id="几个基本操作："><a href="#几个基本操作：" class="headerlink" title="几个基本操作："></a>几个基本操作：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// GET / HTTP/1.1   # 请求</span></div><div class="line">HttpRequest request = <span class="keyword">new</span> BasicHttpRequest(<span class="string">"GET"</span>, <span class="string">"/"</span>, HttpVersion.HTTP_1_1)</div><div class="line"></div><div class="line"><span class="comment">// HTTP/1.1 200 OK  # 响应</span></div><div class="line">HttpResponse response = <span class="keyword">new</span> BasicHttpResponse(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, <span class="string">"OK"</span>);</div></pre></td></tr></table></figure>
+<h3 id="HTTP消息实体"><a href="#HTTP消息实体" class="headerlink" title="HTTP消息实体"></a>HTTP消息实体</h3><p>HttpCore根据内容来源分成三种实体:</p>
+<ul>
+<li>streamed, 从流中接收，来自连接，不可重复读。</li>
+<li>self-contained, 存储于内存中独立于连接，可重复读。 如： <code>ByteArrayEntity</code>、 <code>StringEntity</code>.</li>
+<li>wrapping, 从另外一个消息实体获得。</li>
+</ul>
+<p>HttpCore Http Entity的一些Java实现： <code>BasicHttpEntity</code>、<code>ByteArrayEntity</code>、<code>StringEntity</code>、 <code>InputStreamEntity</code>、<code>FileEntity</code>、<code>HttpEntityWrapper</code>、<code>BufferedHttpEntity</code></p>
+<p>Http协议处理：<br><code>RequestContent</code>、<code>ResponseContent</code>、<code>RequestConnControl</code>、<code>ResponseConnControl</code>、<code>RequestDate</code>、<code>ResponseDate</code>、<code>RequestExpectContinue</code>、<code>RequestTargetHost</code>、<code>RequestUserAgent</code>、<code>ResponseServer</code></p>
+<h2 id="3-阻塞I-O模型"><a href="#3-阻塞I-O模型" class="headerlink" title="3 阻塞I/O模型"></a>3 阻塞I/O模型</h2><p>由于建立一个连接的过程十分复杂，HttpCore并没有提供对http开放连接的全部支持。</p>
+<h3 id="中断Http连接："><a href="#中断Http连接：" class="headerlink" title="中断Http连接："></a>中断Http连接：</h3><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">HttpConnection#close();  //线程非安全</div><div class="line">HttpConnection#shutdown() //线程安全</div></pre></td></tr></table></figure>
+<h3 id="HTTP-1-1定义的三种内容传输机制："><a href="#HTTP-1-1定义的三种内容传输机制：" class="headerlink" title="HTTP/1.1定义的三种内容传输机制："></a>HTTP/1.1定义的三种内容传输机制：</h3><ul>
+<li>Content-Length delimited 内容长度区间， 最大长度Long#MAX_VALUE</li>
+<li>Identity coding          仅能用于服务器端，末尾有结束标志，最大长度无限制</li>
+<li>Chunk coding             块传输。最大长度无限制</li>
+</ul>
+<h3 id="HttpService"><a href="#HttpService" class="headerlink" title="HttpService:"></a>HttpService:</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">HttpProcessor processor = HttpProcessorBuilder.create().add(<span class="keyword">new</span> ResponseDate())</div><div class="line">                            .add(<span class="keyword">new</span> ResponseServer(<span class="string">"My Response Server 1.1"</span>))</div><div class="line">                            .add(<span class="keyword">new</span> ResponseContent())</div><div class="line">                            .add(<span class="keyword">new</span> ResponseConnControl())</div><div class="line">                            .build();</div><div class="line">HttpService service = <span class="keyword">new</span> HttpService(processor, <span class="keyword">null</span>);</div></pre></td></tr></table></figure>
+<h3 id="HttpRequestHandler-and-UriHttpRequestHandlerMapper"><a href="#HttpRequestHandler-and-UriHttpRequestHandlerMapper" class="headerlink" title="HttpRequestHandler and UriHttpRequestHandlerMapper:"></a>HttpRequestHandler and UriHttpRequestHandlerMapper:</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">HttpRequestHandler handler = <span class="keyword">new</span> HttpRequestHandler() &#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(HttpRequest request, HttpResponse response, HttpContext context)</span> <span class="keyword">throws</span> HttpException, IOException </span>&#123;</div><div class="line">        response.setStatusCode(HttpStatus.SC_OK);</div><div class="line">        response.setEntity(<span class="keyword">new</span> StringEntity(<span class="string">"some text"</span>, ContentType.TEXT_PLAIN));</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">UriHttpRequestHandlerMapper handlerMapper = <span class="keyword">new</span> UriHttpRequestHandlerMapper();</div><div class="line">handlerMapper.register(<span class="string">"/service/*"</span>, handler);</div><div class="line">HttpProcessor processor = HttpProcessorBuilder.create().add(<span class="keyword">new</span> ResponseDate())</div><div class="line">        .add(<span class="keyword">new</span> ResponseServer(<span class="string">"My Response Server 1.1"</span>))</div><div class="line">        .add(<span class="keyword">new</span> ResponseContent())</div><div class="line">        .add(<span class="keyword">new</span> ResponseConnControl())</div><div class="line">        .build();</div><div class="line">HttpService httpService = <span class="keyword">new</span> HttpService(processor, handlerMapper);</div></pre></td></tr></table></figure>
+<h3 id="连接池-Connection-Pool"><a href="#连接池-Connection-Pool" class="headerlink" title="连接池(Connection Pool)"></a>连接池(Connection Pool)</h3><p>连接池可以用来提高连接的持久化重用效率。<br>连接池默认仅允许总共20个并发连接，并且只能两个并发连接每个路由(HTTP标准限制)</p>
+<p>以下是连接池设置方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">HttpHost target = <span class="keyword">new</span> HttpHost(<span class="string">"localhost"</span>);</div><div class="line">BasicConnPool connpool = <span class="keyword">new</span> BasicConnPool();</div><div class="line">connpool.setMaxTotal(<span class="number">200</span>);</div><div class="line">connpool.setDefaultMaxPerRoute(<span class="number">10</span>);</div><div class="line">connpool.setMaxPerRoute(target, <span class="number">20</span>);</div><div class="line">Future&lt;BasicPoolEntry&gt; future = connpool.lease(target, <span class="keyword">null</span>);</div><div class="line">BasicPoolEntry poolEntry = future.get();</div><div class="line">HttpClientConnection conn = poolEntry.getConnection();</div></pre></td></tr></table></figure></p>
+<h3 id="TLS-SSL支持"><a href="#TLS-SSL支持" class="headerlink" title="TLS/SSL支持"></a>TLS/SSL支持</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">SSLContext sslcontext = SSLContexts.createSystemDefault();</div><div class="line">SocketFactory sf = sslcontext.getSocketFactory();</div><div class="line">SSLSocket socket = (SSLSocket) sf.createSocket(<span class="string">"somehost"</span>, <span class="number">443</span>);</div><div class="line"><span class="comment">// Enforce TLS and disable SSL</span></div><div class="line">socket.setEnabledProtocols(<span class="keyword">new</span> String[] &#123;</div><div class="line">        <span class="string">"TLSv1"</span>,</div><div class="line">        <span class="string">"TLSv1.1"</span>,</div><div class="line">        <span class="string">"TLSv1.2"</span> &#125;);</div><div class="line"><span class="comment">// Enforce strong ciphers</span></div><div class="line">socket.setEnabledCipherSuites(<span class="keyword">new</span> String[] &#123;</div><div class="line">        <span class="string">"TLS_RSA_WITH_AES_256_CBC_SHA"</span>,</div><div class="line">        <span class="string">"TLS_DHE_RSA_WITH_AES_256_CBC_SHA"</span>,</div><div class="line">        <span class="string">"TLS_DHE_DSS_WITH_AES_256_CBC_SHA"</span> &#125;);</div><div class="line">DefaultBHttpClientConnection conn = <span class="keyword">new</span> DefaultBHttpClientConnection(<span class="number">8</span> * <span class="number">1204</span>);</div><div class="line">conn.bind(socket);</div></pre></td></tr></table></figure>
+<h2 id="4-基于NIO的异步IO模型"><a href="#4-基于NIO的异步IO模型" class="headerlink" title="4 基于NIO的异步IO模型"></a>4 基于NIO的异步IO模型</h2><p>异步IO适合大规模、高负载的场景。</p>
+<h3 id="I-O-reactor"><a href="#I-O-reactor" class="headerlink" title="I/O reactor"></a>I/O reactor</h3><p>HttpCore NIO基于reactor模式。</p>
+<p>I/O reactor的用途是对I/O事件作出反应，并将事件通知发送给单个I/O会话。</p>
+<p>I/O reactor通常使用少量的dispatch线程(建议每个CPU核心一个)来分派I/O事件通知到大规模的I/O会话或连接。</p>
+<h3 id="I-O-reactor-配置"><a href="#I-O-reactor-配置" class="headerlink" title="I/O reactor 配置"></a>I/O reactor 配置</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">IOReactorConfig config = IOReactorConfig.custom()</div><div class="line">                                        .setTcpNoDelay(<span class="keyword">true</span>)</div><div class="line">                                        .setSoTimeout(<span class="number">5000</span>)</div><div class="line">                                        .setSoReuseAddress(<span class="keyword">true</span>)</div><div class="line">                                        .setConnectTimeout(<span class="number">5000</span>).build();</div><div class="line">IOReactor ioreactor = <span class="keyword">new</span> DefaultListeningIOReactor(config);</div></pre></td></tr></table></figure>
+<h3 id="I-O-reactor异常处理"><a href="#I-O-reactor异常处理" class="headerlink" title="I/O reactor异常处理"></a>I/O reactor异常处理</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">DefaultConnectingIOReactor ioreactor = &lt;...&gt;</div><div class="line">ioreactor.setExceptionHandler(<span class="keyword">new</span> IOReactorExceptionHandler() &#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">handle</span><span class="params">(IOException ex)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (ex <span class="keyword">instanceof</span> BindException) &#123;</div><div class="line">            <span class="comment">// bind failures considered OK to ignore</span></div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">handle</span><span class="params">(RuntimeException ex)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (ex <span class="keyword">instanceof</span> UnsupportedOperationException) &#123;</div><div class="line">            <span class="comment">// Unsupported operations considered OK to ignore</span></div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="非阻塞Http连接"><a href="#非阻塞Http连接" class="headerlink" title="非阻塞Http连接"></a>非阻塞Http连接</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">NHttpConnection conn = &lt;...&gt;</div><div class="line">HttpRequest request = conn.getHttpRequest();</div><div class="line"><span class="keyword">if</span> (request != <span class="keyword">null</span>) &#123;</div><div class="line">    System.out.println(<span class="string">"Transferring request: "</span> +</div><div class="line">            request.getRequestLine());</div><div class="line">&#125;</div><div class="line">HttpResponse response = conn.getHttpResponse();</div><div class="line"><span class="keyword">if</span> (response != <span class="keyword">null</span>) &#123;</div><div class="line">    System.out.println(<span class="string">"Transferring response: "</span> +</div><div class="line">            response.getStatusLine());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="Http-IO事件分发"><a href="#Http-IO事件分发" class="headerlink" title="Http IO事件分发"></a>Http IO事件分发</h3><ul>
+<li>NHttpClientEventHandler </li>
+<li>NHttpServerEventHandler</li>
+</ul>
+<h3 id="非阻塞HTTP-content-producers"><a href="#非阻塞HTTP-content-producers" class="headerlink" title="非阻塞HTTP content producers"></a>非阻塞HTTP content producers</h3><p>NByteArrayEntity、NStringEntity、NFileEntity、</p>
+<h3 id="非阻塞HTTP协议handler"><a href="#非阻塞HTTP协议handler" class="headerlink" title="非阻塞HTTP协议handler"></a>非阻塞HTTP协议handler</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">HttpAsyncRequestHandler&lt;HttpRequest&gt; rh = <span class="keyword">new</span> HttpAsyncRequestHandler&lt;HttpRequest&gt;() &#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> HttpAsyncRequestConsumer&lt;HttpRequest&gt; <span class="title">processRequest</span><span class="params">(</span></span></div><div class="line">            <span class="keyword">final</span> HttpRequest request,</div><div class="line">            <span class="keyword">final</span> HttpContext context) &#123;</div><div class="line">        <span class="comment">// Buffer request content in memory for simplicity</span></div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> BasicAsyncRequestConsumer();</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(</span></span></div><div class="line">            <span class="keyword">final</span> HttpRequest request,</div><div class="line">            <span class="keyword">final</span> HttpAsyncExchange httpexchange,</div><div class="line">            <span class="keyword">final</span> HttpContext context) <span class="keyword">throws</span> HttpException, IOException &#123;</div><div class="line">        HttpResponse response = httpexchange.getResponse();</div><div class="line">        response.setStatusCode(HttpStatus.SC_OK);</div><div class="line">        NFileEntity body = <span class="keyword">new</span> NFileEntity(<span class="keyword">new</span> File(<span class="string">"static.html"</span>),</div><div class="line">                ContentType.create(<span class="string">"text/html"</span>, Consts.UTF_8));</div><div class="line">        response.setEntity(body);</div><div class="line">        httpexchange.submitResponse(<span class="keyword">new</span> BasicAsyncResponseProducer(response));</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<h3 id="非阻塞连接池"><a href="#非阻塞连接池" class="headerlink" title="非阻塞连接池"></a>非阻塞连接池</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">HttpHost target = <span class="keyword">new</span> HttpHost(<span class="string">"localhost"</span>);</div><div class="line">ConnectingIOReactor ioreactor = &lt;...&gt;</div><div class="line">BasicNIOConnPool connpool = <span class="keyword">new</span> BasicNIOConnPool(ioreactor);</div><div class="line">connpool.lease(target, <span class="keyword">null</span>,</div><div class="line">        <span class="number">10</span>, TimeUnit.SECONDS,</div><div class="line">        <span class="keyword">new</span> FutureCallback&lt;BasicNIOPoolEntry&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">completed</span><span class="params">(BasicNIOPoolEntry entry)</span> </span>&#123;</div><div class="line">                NHttpClientConnection conn = entry.getConnection();</div><div class="line">                System.out.println(<span class="string">"Connection successfully leased"</span>);</div><div class="line">                <span class="comment">// Update connection context and request output</span></div><div class="line">                conn.requestOutput();</div><div class="line">            &#125;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">failed</span><span class="params">(Exception ex)</span> </span>&#123;</div><div class="line">                System.out.println(<span class="string">"Connection request failed"</span>);</div><div class="line">                ex.printStackTrace();</div><div class="line">            &#125;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cancelled</span><span class="params">()</span> </span>&#123;</div><div class="line">            &#125;</div><div class="line">        &#125;);</div></pre></td></tr></table></figure>
+<h3 id="非阻塞TLS-SSL"><a href="#非阻塞TLS-SSL" class="headerlink" title="非阻塞TLS/SSL"></a>非阻塞TLS/SSL</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">SSLContext sslcontext = SSLContexts.createDefault();</div><div class="line"><span class="comment">// Plain I/O session</span></div><div class="line">IOSession iosession = &lt;...&gt;</div><div class="line">SSLSetupHandler mysslhandler = <span class="keyword">new</span> SSLSetupHandler() &#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initalize</span><span class="params">(<span class="keyword">final</span> SSLEngine sslengine)</span> <span class="keyword">throws</span> SSLException </span>&#123;</div><div class="line">        <span class="comment">// Enforce TLS and disable SSL</span></div><div class="line">        sslengine.setEnabledProtocols(<span class="keyword">new</span> String[] &#123;</div><div class="line">                <span class="string">"TLSv1"</span>,</div><div class="line">                <span class="string">"TLSv1.1"</span>,</div><div class="line">                <span class="string">"TLSv1.2"</span> &#125;);</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">verify</span><span class="params">(</span></span></div><div class="line">            <span class="keyword">final</span> IOSession iosession, <span class="keyword">final</span> SSLSession sslsession) <span class="keyword">throws</span> SSLException &#123;</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">SSLNHttpClientConnectionFactory connfactory = <span class="keyword">new</span> SSLNHttpClientConnectionFactory(</div><div class="line">        sslcontext, mysslhandler, ConnectionConfig.DEFAULT);</div><div class="line">NHttpClientConnection conn = connfactory.createConnection(iosession);</div></pre></td></tr></table></figure>
+<h2 id="5-官方demo-github拷贝"><a href="#5-官方demo-github拷贝" class="headerlink" title="5 官方demo github拷贝"></a>5 官方demo github拷贝</h2><p><a href="https://github.com/a598799539/http_core_example.git" target="_blank" rel="external">地址</a></p>
+]]></content>
+      
+        <categories>
+            
+            <category> Java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Apache </tag>
+            
+            <tag> HttpCore </tag>
+            
+            <tag> Java </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[《意志决定命运》读书笔记]]></title>
+      <url>http://www.iprogrammr.com/08/31/2015/Willpower-decides-the-fate.html</url>
+      <content type="html"><![CDATA[<p><a href="http://book.douban.com/subject/26320590/" target="_blank" rel="external">《意志决定命运》</a></p>
+<p>作者: （德）叔本华<br>出版社: 长江文艺出版社<br>译者: 韦启昌</p>
+<ol>
+<li>人们常说“站在巨人的肩膀上”，依我看来，读大师的书是站在巨人肩膀上最简便的法子。 （摘自译文前言）</li>
+<li>一个人会在细节小事上疏于防备，从而表露自己的性格。</li>
+<li>我们改变不了意欲所要争取的目标，而只可以改变意欲为实现其目标所采取的途径。</li>
+<li>归根到底，每个人只是做出他本性之中亦即他与生俱来的内在已经无法挽回地固定下来的事情。</li>
+<li>一个人的个性（亦即他既定的性格和既定的智力）就像渗透力很强的颜料一样，精确决定了这个人的所有行为和思想，包括最琐碎的细节。</li>
+<li>智力只是一种理论性的能力：它勾画和罗列出为人称道的，因而是值得追求的人生道路。</li>
+<li>意欲则是既成现实、不可改变的某样东西，它不顾智力勾画出的蓝图，仍然走上一条截然不同的道路。</li>
+<li>一样良好的品性就可以盖过并抹去智力上的严重不足。</li>
+<li>这是因为心的善良是一种超验的素质，它属于某种扩展至此生之外的事物秩序、法则，其他方面的完美是不可以和它相提并论的。</li>
+<li>一个人性格并不是巧妙、精心培养以后的结果，也不是偶然所处环境的产物，而是大自然本身的作品。</li>
+<li>从我们所做，我们才知道我们所是。</li>
+<li>每一个受到不公正对待的人，内心都自然会燃起报复的炽热渴望。</li>
+<li>一个人越高傲，或者虚荣心越强，那么，他就越加热切地渴望报复。</li>
+<li>一般来说，所有人的行为都是出自利己之心，我们每次在尝试解释人得某一行为时，都应该首先从这一观点出发。</li>
+<li>招致别人嫉妒的素质越出色，那具备如此素质的人就越陷入孤独。</li>
+<li>我们永远不要忘记：嫉妒总是与憎恨相伴随。我们一定要小心别让怀有嫉妒心的人成为自己表里不一的朋友。</li>
+<li>某一强有力的动因，诸如深切的渴望或者迫切的需要，有时会把智力提高至某个我们在这之前不曾相信的程度。</li>
+<li>衡量一个人是否幸福，我们不应该向他询问那些令他高兴的赏心乐事，而应该了解那些让他烦恼操心的事情，因为烦扰他的事情越少、越微不足道，那么他也就生活的越幸福。</li>
+<li>我们的幸福十占其九依赖于我们的健康。只要我们保持健康。一切都也就成了快乐的源泉。</li>
+<li>每个人充分发挥自己的所能，努力做到最好。一个人越能做到这一点，那他在自己的身上就越能找到乐趣的源泉，那他也就越幸福。</li>
+<li>阅读就是以别人的而不是自己的头脑思考事情。</li>
+<li>我们则应该把始终是相当有限的阅读时间专门用于阅读历史上各个国家和民族所曾有过的伟大著作。</li>
+<li>宁可购买二手书，也不要阅读内容方便的二手书。</li>
+<li>财富犹如海水：一个人海水喝得越多，他就越感到口渴。</li>
+<li>一个人越是属于他的后世，亦即属于整个人类大众，那他就越是不为自己的时代所了解，为他的贡献对象不仅是他的时代，他为之奉献的是整个人类。</li>
+<li>智慧得益于反省。</li>
+<li>虚荣和骄傲之前的差别在于：骄傲就是确信自己拥有某一方面的突出价值，但虚荣则尽力让别人确信自己拥有某一方面的突出价值。</li>
+<li>在与别人谈话时，我们不要试图矫正别人，尽管我们所说的出于善意。因为冒犯和得罪别人是很容易的，但要对此做出弥补，如果不是不可能的话，也是相当困难的。</li>
+<li>只有经历孤独才能达到卓越。</li>
+<li>只有当一个人独处的时候，他才可以完全成为自己。谁要是不热爱独处，那他也就不热爱自由，因为只有当一个人独处的时候，他才是自由的。</li>
+<li>教育的关键在于从正确的一端开始认识这一世界，而获得这样的认识可以说是一切教育的目的。</li>
+<li>对文学最简单和最确切的定义就是：一门借用字词把想象力活动起来的艺术。</li>
+<li>翻译永远无法发挥原文的效果。</li>
+<li>知识因反复斟酌而变得更有价值。</li>
+</ol>
+]]></content>
+      
+        <categories>
+            
+            <category> 读书笔记 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 叔本华 </tag>
+            
+            <tag> 意志决定命运 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[《如何阅读一本书》读书笔记]]></title>
+      <url>http://www.iprogrammr.com/08/22/2015/how-to-read-a-book-notes.html</url>
+      <content type="html"><![CDATA[<p><a href="http://book.douban.com/subject/1013208/" target="_blank" rel="external">《如何阅读一本书》</a></p>
+<p>作者: [美] 莫提默·J. 艾德勒 / 查尔斯·范多伦</p>
+<p><img src="http://img4.douban.com/mpic/s1670978.jpg" alt="how to read a book"></p>
+<p>1.太多的资讯就如同太少的资讯一样,都是对理解力的阻碍。换句话说，现代的媒体正以压倒性的泛滥资讯阻碍了我们的理解力。</p>
+<p>2.要避免这样的错误——以为读的多就是读的好的错误——我们必须要区分出各种不同的阅读形态。</p>
+<p>3.思考只是主动阅读的一部分。一个人还必须运用他的感觉与想象力。一个人必须观察，记忆，在看不到的地方运用想象力。</p>
+<p>4.阅读的几个层次：基础阅读、检视阅读、分析阅读、主题阅读。</p>
+<p>5.所谓阅读速度，理想上来说，不只是要能读得快，还要能用不同的速度来阅读，要知道什么时候用什么样的速度是恰当的。</p>
+<p>6.在第一次阅读一本难读的书时，不要企图了解每一个字句，这是最重要的一个规则。</p>
+<p>7.要真正完全拥有一本书，必须把这本书变成你自己的一部分才行，而要让你成为书的一部分最好的方法就是书成为你的一部分和你成为书的一部分<br>是同一件事，就是要去写下来。</p>
+<p>8.不论是什么样的书，你身为读者的义务都是一样的。如果这本书有一些论述，你应该是些什么论述，而能用简洁的话说出来。</p>
+<p>9.任何使用性的书都不能解决书所关心的实际问题。一本理论性的作品可以解决自己提出的问题。但是实际的问题<br>却只能靠行动来解决。</p>
+]]></content>
+      
+        <categories>
+            
+            <category> 读书笔记 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 如何阅读一本书 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[[Java性能优化]06 装饰者模式]]></title>
+      <url>http://www.iprogrammr.com/06/21/2015/java-design-pattern-decorator.html</url>
+      <content type="html"><![CDATA[<p>装饰者模式拥有一种非常巧妙的结构，它可以动态添加对象功能。<br>它使用委托机制，降低代码的耦合性，复用系统中的各个组件，使得我们最终构造的对象具有这些所有功能。</p>
+<p>装饰者模式可以有效的分离性能组件和功能组件，从而提升模块的可维护性并增加模块的复用性。</p>
+<p>装饰者(<code>Decorator</code>)和被装饰者(<code>ConcreteComponent</code>)拥有相同的接口<code>Component</code>。<br>被装饰者通常是系统的核心组件，完成特定的功能目标。而装饰者则可以在被装饰者的方法前后加上特定的前置处理或者后置处理，<br>增强被装饰者功能。</p>
+<p>下面举例说明：</p>
+<p>需求：我们需要将一个内容以HTML的方式发布。</p>
+<ul>
+<li>需要将内容转换成HTML文本</li>
+<li>增加HTML头</li>
+<li>增加HTTP头</li>
+</ul>
+<p>首先，我们定义一个组件接口，它的主要功能就是对内容进行处理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IPacketCreator</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">handleContent</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>PacketCreator</code>用于返回数据包的核心数据：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PacketBodyCreator</span> <span class="keyword">implements</span> <span class="title">IPacketCreator</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">handleContent</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"Content of Body"</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>PacketDecorator</code>对组件进行维护， 它并不实现业务逻辑，仅仅给子类提供一个委托对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">PacketDecorator</span> <span class="keyword">implements</span> <span class="title">IPacketCreator</span> </span>&#123;</div><div class="line">    IPacketCreator component;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PacketDecorator</span><span class="params">(IPacketCreator creator)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.component = creator;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>下面是具体组件的实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PacketHtmlHeaderCreator</span> <span class="keyword">extends</span> <span class="title">PacketDecorator</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PacketHtmlHeaderCreator</span><span class="params">(IPacketCreator creator)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(creator);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">handleContent</span><span class="params">()</span> </span>&#123;</div><div class="line">        StringBuilder sb = <span class="keyword">new</span> StringBuilder();</div><div class="line">        sb.append(<span class="string">"&lt;html&gt;"</span>);</div><div class="line">        sb.append(<span class="string">"&lt;body&gt;"</span>);</div><div class="line">        sb.append(component.handleContent());</div><div class="line">        sb.append(<span class="string">"&lt;/body&gt;"</span>);</div><div class="line">        sb.append(<span class="string">"&lt;/html&gt;"</span>);</div><div class="line">        <span class="keyword">return</span> sb.toString();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PacketHTTPHeaderCreator</span> <span class="keyword">extends</span> <span class="title">PacketDecorator</span></span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PacketHTTPHeaderCreator</span><span class="params">(IPacketCreator creator)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(creator);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">handleContent</span><span class="params">()</span> </span>&#123;</div><div class="line">        StringBuffer sb = <span class="keyword">new</span> StringBuffer();</div><div class="line">        sb.append(<span class="string">"CacheControl:no-cache\n"</span>);</div><div class="line">        sb.append(<span class="string">"Date:Sun,21June201515:58:57GMT\n"</span>);</div><div class="line">        sb.append(component.handleContent());</div><div class="line">        <span class="keyword">return</span> sb.toString();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>测试：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DecoratorTester</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        IPacketCreator pc = <span class="keyword">new</span> PacketHTTPHeaderCreator(</div><div class="line">                <span class="keyword">new</span> PacketHtmlHeaderCreator(<span class="keyword">new</span> PacketBodyCreator()));</div><div class="line">        System.out.println(pc.handleContent());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从例子中我们可以看出，组件的各种功能最后被一层层的嵌入最终的pc中。</p>
+<p>其实装饰者模式在日常使用中也很常见，比如JDK中的<code>IO Stream</code>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DataOutputStream dos = <span class="keyword">new</span> DataOutputStream(<span class="keyword">new</span> BufferedOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">"/data/file.txt"</span>)));</div></pre></td></tr></table></figure>
+]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 装饰者模式 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[[Java性能优化]05 享元模式]]></title>
+      <url>http://www.iprogrammr.com/06/07/2015/java-design-pattern-flyweight.html</url>
+      <content type="html"><![CDATA[<p>享元模式，顾名思义：共享元对象。如果在一个系统中存在多个相同的对象，那么只需要共享一份对象的拷贝，而不必<br>为每一次使用创建新的对象。</p>
+<p>享元模式是为数不多的、只为提升系统性能而生的设计模式。它的主要作用就是复用大对象（重量级对象），以节省内存空间和对象创建时间。</p>
+<p><strong>享元对象</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> String id = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getId</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> id;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(String id)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.id = id;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(String _id)</span></span>&#123;</div><div class="line">        <span class="keyword">this</span>.id = _id;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>享元工厂</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.util.HashMap;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PersonFlyWeightFactory</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> HashMap&lt;String,Person&gt; persons = <span class="keyword">new</span> HashMap&lt;String, Person&gt;();</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Person <span class="title">getPerson</span><span class="params">(String id)</span></span>&#123;</div><div class="line">        Person p = persons.get(id);</div><div class="line">        <span class="keyword">if</span>(p == <span class="keyword">null</span>) &#123;</div><div class="line">            p = <span class="keyword">new</span> Person(id);</div><div class="line">            persons.put(id, p);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> p;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>测试1</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FlyWeightMain</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        Person p1 = <span class="keyword">new</span> Person(<span class="string">"p1"</span>);</div><div class="line">        Person p2 = <span class="keyword">new</span> Person(<span class="string">"p1"</span>);</div><div class="line">        System.out.println(<span class="string">"p1==p2:"</span> + (p1==p2));</div><div class="line">        Person p3 = PersonFlyWeightFactory.getPerson(<span class="string">"p3"</span>);</div><div class="line">        Person p4 = PersonFlyWeightFactory.getPerson(<span class="string">"p3"</span>);</div><div class="line">        System.out.println(<span class="string">"p3==p4:"</span> + (p3==p4));</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>结果</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">p1==p2:false</div><div class="line">p3==p4:true</div></pre></td></tr></table></figure>
+<p>从上面的结果中我们可以看出，使用享元工厂获得的p3并没有新建对象。</p>
+<p><strong>测试2</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">long</span> begin = System.currentTimeMillis();</div><div class="line"><span class="keyword">for</span>(<span class="keyword">long</span> i=<span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++)&#123;</div><div class="line">    Person p5 = PersonFlyWeightFactory.getPerson(<span class="string">"p4"</span>);</div><div class="line">&#125;</div><div class="line"><span class="keyword">long</span> end = System.currentTimeMillis();</div><div class="line">System.out.println(end - begin);</div><div class="line"></div><div class="line"><span class="keyword">long</span> begin1 = System.currentTimeMillis();</div><div class="line"><span class="keyword">for</span>(<span class="keyword">long</span> i=<span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++)&#123;</div><div class="line">    Person p5 = <span class="keyword">new</span> Person(<span class="string">"p"</span>);</div><div class="line">&#125;</div><div class="line"><span class="keyword">long</span> end1 = System.currentTimeMillis();</div><div class="line">System.out.println(end1 - begin1);</div></pre></td></tr></table></figure>
+<p><strong>结果2</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">15</div><div class="line">2</div></pre></td></tr></table></figure>
+<p>但是我们在<code>Person</code>的构造函数中加入<code>new Thread()</code>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(String _id)</span></span>&#123;</div><div class="line">    <span class="keyword">new</span> Thread();</div><div class="line">    <span class="keyword">this</span>.id = _id;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最终的输出结果将如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">14</div><div class="line">1008</div></pre></td></tr></table></figure>
+<p>从以上结果我们可以看出使用享元模式，我们的内存对象是减少了重复创建，<br>但是由于对象创建的耗时相对享元工厂获取对象的耗时小的多，使得我们最终的执行效率反倒下降。<br>只有当对象在创建时耗时较大时，享元模式才能更好的发挥作用。</p>
+<hr>
+<p>享元模式的主要应用场景是：当某个业务对象，创建对象比较耗时，可以使用享元模式来提升对象创建速度。同时也节省了内存的开销。<br>当然，如果创建并不耗时的对象使用享元模式的话，由于每次获取对象都要通过一系列相对原来复杂的操作，这会使得执行效率下降。</p>
+]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 享元模式 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[[Java性能优化]04 动态代理实现]]></title>
+      <url>http://www.iprogrammr.com/06/07/2015/java-design-pattern-proxy-invoke.html</url>
+      <content type="html"><![CDATA[<p>在<a href="/java/2015/06/06/java-design-pattern-proxy.html">上一篇文章</a>中,我们讲到了简单的代理模式实现。<br>但是同时也产生了一个问题：假如我们需要代理的真实类中有很多方法，那么我们就要仿照真实类覆盖实现<br>所有的方法。这使得我们的代码就有很多重复。但是我们可以使用简单的JDK动态代理的方式来实现。</p>
+<p>首先，假设我们的<code>IDBQuery</code>有如下实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IDBQuery</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">query</span><span class="params">()</span></span>;</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span></span>;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span></span>;</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getData</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后在<code>DBQuery</code>中进行实现和打出简单的说明：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DBQuery</span> <span class="keyword">implements</span> <span class="title">IDBQuery</span>  </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DBQuery</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="comment">//start db connect</span></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            Thread.sleep(<span class="number">1000</span>);</div><div class="line">            System.out.println(<span class="string">"start db connect..."</span>);</div><div class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">query</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"begin query..."</span>);</div><div class="line">        <span class="keyword">return</span> <span class="string">"begin query..."</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"getName()..."</span>);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"getAge()"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getData</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"getData()"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来我们创建<code>DBQuery</code>的<code>InvocationHandler</code>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InvocationDBQueryHandler</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> DBQuery dbQuery = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span></span></div><div class="line">            <span class="keyword">throws</span> Throwable &#123;</div><div class="line">        <span class="keyword">if</span>(dbQuery == <span class="keyword">null</span>)&#123;</div><div class="line">            dbQuery = <span class="keyword">new</span> DBQuery(); <span class="comment">//如果第一次被调用才生成真实对象</span></div><div class="line">        &#125;</div><div class="line">        String methodName = method.getName();</div><div class="line">        System.out.println(<span class="string">"called method name:"</span> + methodName);</div><div class="line">        <span class="keyword">return</span> method.invoke(dbQuery, args);<span class="comment">//转调真实方法</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> IDBQuery <span class="title">createJdkDBQuery</span><span class="params">()</span></span>&#123;</div><div class="line">        IDBQuery idbq = (IDBQuery) Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(),</div><div class="line">                <span class="keyword">new</span> Class[]&#123;IDBQuery.class&#125;, <span class="keyword">new</span> InvocationDBQueryHandler());</div><div class="line">        <span class="keyword">return</span> idbq;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>以下是测试：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">IDBQuery jdkIdbq = InvocationDBQueryHandler.createJdkDBQuery();</div><div class="line">System.out.println(<span class="string">"after create jdkDBQuery"</span>);</div><div class="line">jdkIdbq.query();</div><div class="line">jdkIdbq.getAge();</div><div class="line">jdkIdbq.getName();</div><div class="line">jdkIdbq.getData();</div></pre></td></tr></table></figure>
+<p>得到如下输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">after create jdkDBQuery</div><div class="line">start db connect...</div><div class="line">called method name:query</div><div class="line">begin query...</div><div class="line">called method name:getAge</div><div class="line">getAge()</div><div class="line">called method name:getName</div><div class="line">getName()...</div><div class="line">called method name:getData</div><div class="line">getData()</div></pre></td></tr></table></figure>
+<p>从结果可以看出：<br>就像上一篇的<code>DBQueryProxy</code>一样，我们仅在<code>query</code>方法或其他方法被调用时才初始化<code>DBQuery</code>。</p>
+<p>这种动态代理的方法简单快速的实现了我们需要延迟加载<code>DBQuery</code>的需求。其实动态代理的常用场景是日志记录和<br>业务分离，例如Spring Framework中的AOP。使用动态代理我们可以在被调用方法的前后执行我们需要的操作。</p>
+]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 动态代理 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[[Java性能优化]03 代理模式]]></title>
+      <url>http://www.iprogrammr.com/06/06/2015/java-design-pattern-proxy.html</url>
+      <content type="html"><![CDATA[<h3 id="1-简单介绍"><a href="#1-简单介绍" class="headerlink" title="1 简单介绍"></a>1 简单介绍</h3><p>代理模式中，我们使用代理对象完成用户请求，屏蔽用户对真实对象的访问。当然，如果真实对象<br>在对象创建时就要加载很多东西，我们也可以通过代理对象实现延迟加载。</p>
+<p>代理模式主要包含主题接口类、接口实现真实类（被代理类）、代理类、应用类。</p>
+<h3 id="2-主题接口类"><a href="#2-主题接口类" class="headerlink" title="2 主题接口类"></a>2 主题接口类</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IDBQuery</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">query</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="3-真实类"><a href="#3-真实类" class="headerlink" title="3 真实类"></a>3 真实类</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DBQuery</span> <span class="keyword">implements</span> <span class="title">IDBQuery</span>  </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DBQuery</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="comment">//start db connect</span></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            Thread.sleep(<span class="number">1000</span>);</div><div class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">query</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"begin query..."</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="4-代理类"><a href="#4-代理类" class="headerlink" title="4 代理类"></a>4 代理类</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DBQueryProxy</span> <span class="keyword">implements</span> <span class="title">IDBQuery</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> DBQuery dbQuery = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">query</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span>(dbQuery == <span class="keyword">null</span>)&#123;</div><div class="line">            dbQuery = <span class="keyword">new</span> DBQuery();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> dbQuery.query();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="5-应用Main"><a href="#5-应用Main" class="headerlink" title="5 应用Main"></a>5 应用Main</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        IDBQuery idbq = <span class="keyword">new</span> DBQueryProxy();</div><div class="line">        idbq.query();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 代理模式 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Fedora Change Default Java Version]]></title>
+      <url>http://www.iprogrammr.com/05/24/2015/fedora-change-default-java-version.html</url>
+      <content type="html"><![CDATA[<p>Type the following command in the terminal and chose your own java version:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">update-alternatives --config java</div></pre></td></tr></table></figure>
+]]></content>
+      
+        <categories>
+            
+            <category> Fedora </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Fedora </tag>
+            
+            <tag> java </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Model虚拟字段]]></title>
+      <url>http://www.iprogrammr.com/04/07/2015/virtual-attributes.html</url>
+      <content type="html"><![CDATA[<p>经常我们会用到一些有数据库中多个字段组合而成的信息，如姓名（姓+    名），地址（省+市+区+街道）.</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span> &lt; ActiveRecord::Base</span></div><div class="line">  <span class="comment"># Getter</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">full_name</span></span></div><div class="line">    [first_name, last_name].join(<span class="string">' '</span>)</div><div class="line">  <span class="keyword">end</span></div><div class="line"></div><div class="line">  <span class="comment"># Setter</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">full_name=</span><span class="params">(name)</span></span></div><div class="line">    split = name.split(<span class="string">' '</span>, <span class="number">2</span>)</div><div class="line">    <span class="keyword">self</span>.first_name = split.first</div><div class="line">    <span class="keyword">self</span>.last_name = split.last</div><div class="line">  <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div></pre></td></tr></table></figure>
+]]></content>
+      
+        <categories>
+            
+            <category> Rails </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 虚拟字段 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Fedora 20 连不上PPTP VPN]]></title>
+      <url>http://www.iprogrammr.com/04/04/2015/cant-connect-pptp-vpn-on-fedora-20.html</url>
+      <content type="html"><![CDATA[<p>刚安装了Fedora 20系统，想连接自己搭建的vpn，发现总是连接<br>不上。终于找到解决办法。</p>
+<p>原因很简单:</p>
+<p><strong>因为没有关闭防火墙:(</strong></p>
+<p>以下是fedora 20 关闭防火墙的方法：</p>
+<p>service 方式</p>
+<p>开启：<code>service iptables start</code></p>
+<p>关闭： <code>service iptables stop</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ sudo systemctl stop firewalld.service  <span class="comment">## 停止防火墙</span></div><div class="line">$ systemctl <span class="built_in">disable</span> firewalld.service</div></pre></td></tr></table></figure>
+<p>关闭之后只需要通过设置中添加PPTP的VPN连接即可。</p>
+]]></content>
+      
+        <categories>
+            
+            <category> Fedora </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Fedora </tag>
+            
+            <tag> PPTP </tag>
+            
+            <tag> VPN </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[使用filter_parameter_logging过滤敏感日志]]></title>
+      <url>http://www.iprogrammr.com/03/31/2015/filtering-sensitive-logs.html</url>
+      <content type="html"><![CDATA[<p>在rails的日志打印中，我们经常需要对信息进行日志打印过滤，如密码一类的信息。</p>
+<p>下面是正常的日志输出:</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Processing UsersController<span class="comment">#create (for 127.0.0.1 at 2009-01-02 10:13:13) [POST]</span></div><div class="line"><span class="symbol">Parameters:</span> &#123;<span class="string">"user"</span>=&gt;&#123;<span class="string">"name"</span>=&gt;<span class="string">"eifion"</span>, <span class="string">"password_confirmation"</span>=&gt;<span class="string">"secret"</span>, <span class="string">"password"</span>=&gt;<span class="string">"secret"</span>&#125;, <span class="string">"commit"</span>=&gt;<span class="string">"Register"</span>, <span class="string">"authenticity_token"</span>=&gt;<span class="string">"9efc03bcc37191d8a6dc3676e2e7890ecdfda0b5"</span>&#125;</div><div class="line">User Create (<span class="number">0</span>.<span class="number">5</span>ms)   INSERT INTO <span class="string">"users"</span> (<span class="string">"name"</span>, <span class="string">"updated_at"</span>, <span class="string">"password_confirmation"</span>, <span class="string">"password"</span>, <span class="string">"created_at"</span>) VALUES(<span class="string">'eifion'</span>, <span class="string">'2009-01-02 10:13:13'</span>, <span class="string">'secret'</span>, <span class="string">'secret'</span>, <span class="string">'2009-01-02 10:13:13'</span>)</div></pre></td></tr></table></figure>
+<p>当我们对<code>password</code>做日志过滤后：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ApplicationController</span> &lt; ActionController::Base</span></div><div class="line">  filter_parameter_logging <span class="string">"password"</span></div><div class="line"><span class="keyword">end</span></div></pre></td></tr></table></figure>
+<p>过滤后的日志:</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Processing UsersController<span class="comment">#create (for 127.0.0.1 at 2009-01-02 11:02:33) [POST]</span></div><div class="line">  <span class="symbol">Parameters:</span> &#123;<span class="string">"user"</span>=&gt;&#123;<span class="string">"name"</span>=&gt;<span class="string">"susan"</span>, <span class="string">"password_confirmation"</span>=&gt;<span class="string">"[FILTERED]"</span>, <span class="string">"password"</span>=&gt;<span class="string">"[FILTERED]"</span>&#125;, <span class="string">"commit"</span>=&gt;<span class="string">"Register"</span>, <span class="string">"action"</span>=&gt;<span class="string">"create"</span>,</div><div class="line">  <span class="string">"authenticity_token"</span>=&gt;<span class="string">"9efc03bcc37191d8a6dc3676e2e7890ecdfda0b5"</span>, <span class="string">"controller"</span>=&gt;<span class="string">"users"</span>&#125;</div><div class="line">    User Create (<span class="number">0</span>.<span class="number">4</span>ms)   INSERT INTO <span class="string">"users"</span> (<span class="string">"name"</span>, <span class="string">"updated_at"</span>, <span class="string">"password_confirmation"</span>, <span class="string">"password"</span>, <span class="string">"created_at"</span>) VALUES(<span class="string">'susan'</span>, <span class="string">'2009-01-02 11:02:33'</span>, <span class="string">'verysecret'</span>, <span class="string">'verysecret'</span>, <span class="string">'2009-01-02</span></div><div class="line">    11:02:33')</div></pre></td></tr></table></figure>
+]]></content>
+      
+        <categories>
+            
+            <category> Rails </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Rails </tag>
+            
+            <tag> filter_parameter_logging </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Rails to_proc(&)]]></title>
+      <url>http://www.iprogrammr.com/03/30/2015/shortcut-blocks-with-symbol-to-proc.html</url>
+      <content type="html"><![CDATA[<p>Rails中有一个很棒的特性:<code>使用&amp;进行块转换</code>，他可以让我们方便快速的写出块。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">projects.collect &#123; <span class="params">|p|</span> p.name &#125;</div></pre></td></tr></table></figure>
+<p>等价于</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">projects.collect(&amp;<span class="symbol">:name</span>)</div></pre></td></tr></table></figure>
+<p>有了块转换，我们就方便了许多</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">projects.collect(&amp;<span class="symbol">:nmae</span>).collect(&amp;<span class="symbol">:upcase</span>)</div></pre></td></tr></table></figure>
+]]></content>
+      
+        <categories>
+            
+            <category> Rails </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> to_proc </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Ruby面试题]]></title>
+      <url>http://www.iprogrammr.com/03/20/2015/the-Ruby-Interview-Question.html</url>
+      <content type="html"><![CDATA[<p>下面是对<a href="https://github.com/afeld/rails_interview_questions" target="_blank" rel="external">Rails Interview Questions</a>中的<br><code>Ruby</code>部分的解答:</p>
+<h3 id="1-What’s-the-difference-between-a-lambda-a-block-and-a-proc"><a href="#1-What’s-the-difference-between-a-lambda-a-block-and-a-proc" class="headerlink" title="1 What’s the difference between a lambda, a block and a proc?"></a>1 What’s the difference between a lambda, a block and a proc?</h3><h4 id="（1）Blocks与Procs的不同点"><a href="#（1）Blocks与Procs的不同点" class="headerlink" title="（1）Blocks与Procs的不同点"></a>（1）Blocks与Procs的不同点</h4><ul>
+<li>Procs是对象Object，但Block并不是一个对象，它只是一个代码段</li>
+<li>每个方法至多只能传递一个代码段，但可以传递多个<code>Proc</code></li>
+</ul>
+<h4 id="（2）Proc和Lambda的异同"><a href="#（2）Proc和Lambda的异同" class="headerlink" title="（2）Proc和Lambda的异同"></a>（2）Proc和Lambda的异同</h4><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">proc = Proc.new &#123;puts <span class="string">"hello world"</span>&#125;</div><div class="line">lambda = lambda &#123;puts <span class="string">"hello world"</span>&#125;</div><div class="line"></div><div class="line">proc.<span class="keyword">class</span>  <span class="comment"># rerturn 'Proc'</span></div><div class="line">lambda.<span class="keyword">class</span> <span class="comment"># return 'Proc'</span></div></pre></td></tr></table></figure>
+<p>从上面可以看出，其实Proc和lambda都是<code>Proc</code>对象。</p>
+<ul>
+<li><code>lambda</code>会检查参数数量而<code>proc</code>则不会</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">lam = lambda &#123; <span class="params">|x|</span> puts x&#125;</div><div class="line">lam.call(<span class="number">2</span>)  <span class="comment"># print 2</span></div><div class="line">lam.call  <span class="comment"># ArgumentError: wrong number of arguments (0 for 1)</span></div><div class="line">lam.call(<span class="number">1</span>,<span class="number">2</span>) <span class="comment"># ArgumentError: wrong number of arguments (2 for 1)</span></div><div class="line"></div><div class="line">pro = Proc.new &#123;<span class="params">|x|</span> puts x&#125;</div><div class="line">proc.call(<span class="number">2</span>)  <span class="comment"># print 2</span></div><div class="line">proc.call    <span class="comment"># return nil</span></div><div class="line">proc.call(<span class="number">1</span>,<span class="number">2</span>) <span class="comment"># print 1</span></div></pre></td></tr></table></figure>
+<ul>
+<li><code>lambda</code>和<code>proc</code>对’return’关键字的含义不一样,而且<code>proc</code>的<code>return</code>只能在方法体中调用</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">lambda_test</span></span></div><div class="line">  lam = lambda &#123; <span class="keyword">return</span> &#125;</div><div class="line">  lam.call</div><div class="line">  puts <span class="string">"hello"</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">lambda_test   <span class="comment"># puts 'hello'</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">proc_test</span></span></div><div class="line">  pro = Proc.new &#123;<span class="keyword">return</span>&#125;</div><div class="line">  proc.call</div><div class="line">  puts <span class="string">'hello'</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">proc_test  <span class="comment"># return nil  不打印hello</span></div></pre></td></tr></table></figure>
+<h3 id="2-How-do-you-sort-an-Array-of-objects-by-paticular-attributes-What-is-better-way-to-do-sorting-with-ActiveRecord"><a href="#2-How-do-you-sort-an-Array-of-objects-by-paticular-attributes-What-is-better-way-to-do-sorting-with-ActiveRecord" class="headerlink" title="2 How do you sort an Array of objects by paticular attributes? What is better way to do sorting with ActiveRecord?"></a>2 How do you sort an Array of objects by paticular attributes? What is better way to do sorting with ActiveRecord?</h3><p>首先我们来回答第一问：怎么通过某个字段来对对象数组排序？<br>假设我们有一个对象数组<code>@users</code>，我们需要让他对字段<code>name</code>排序，则我们可以：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@users.sort!&#123;<span class="params">|a,b|</span> a.name &lt;=&gt; b.name&#125;</div></pre></td></tr></table></figure>
+<p>如果是在<code>ActiveRecord</code>中，则我们只需：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@users = @users.order(<span class="symbol">:name</span>)</div></pre></td></tr></table></figure>
+<h3 id="3-What-are-some-of-your-favorite-gems-What-are-their-alternatives"><a href="#3-What-are-some-of-your-favorite-gems-What-are-their-alternatives" class="headerlink" title="3 What are some of your favorite gems? What are their alternatives?"></a>3 What are some of your favorite gems? What are their alternatives?</h3><p>下面列举我喜欢的几个常用的gems及它的可替代备选方案</p>
+<ul>
+<li><code>Rails</code>基于MVC设计模式的高效Web开发框架。备选方案:<code>Sinatra</code>:轻量级的web开发选择</li>
+<li><code>jquery-rails</code>:jQuery for rails.</li>
+<li><code>haml-rails</code>:简化view层的编写，少了麻烦重复的标签。可替代:<code>erb-rails</code></li>
+<li><code>devise</code>:用户认证插件。</li>
+<li><code>rspec-rails</code>:test</li>
+<li><code>seed-fu</code>: 数据初始化</li>
+<li><code>faraday</code>: http请求与html内容解析</li>
+</ul>
+<h3 id="4-In-Ruby-which-is-generally-the-better-option-a-recursive-function-or-an-iterative-one"><a href="#4-In-Ruby-which-is-generally-the-better-option-a-recursive-function-or-an-iterative-one" class="headerlink" title="4 In Ruby, which is generally the better option: a recursive function or an iterative one?"></a>4 In Ruby, which is generally the better option: a recursive function or an iterative one?</h3><p>首先我们说明一下递归(recursive)和迭代(iterative):</p>
+<p><strong>递归</strong>:一个树结构，每个分支都探究到最远，发现无法继续走的时候往回走，每个节点只会访问一次。</p>
+<p><strong>迭代</strong>:一个环结构，每次迭代都是一个圈，不会落掉其中的每一步，然后不断循环每个节点都会被循环访问。</p>
+<p>由此我们可以看出<code>ruby</code>中更加常用的选择是<code>迭代</code>，就像<code>.each</code>,<code>.times</code>,<code>.map</code>等都是迭代循环的形式。</p>
+<h3 id="5-What-are-method-missing-and-send-Why-are-they-useful"><a href="#5-What-are-method-missing-and-send-Why-are-they-useful" class="headerlink" title="5 What are #method_missing and #send? Why are they useful?"></a>5 What are #method_missing and #send? Why are they useful?</h3><ul>
+<li>method_missing，顾名思义，在方法找不到时被调用。有了这个强大元编程工具，我们就能创建动态的方法，比如ActiveRecord中的动态finder</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Legislator</span></span></div><div class="line">  <span class="comment"># Pretend this is a real implementation</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">find</span><span class="params">(conditions = &#123;&#125;)</span></span></div><div class="line">  <span class="keyword">end</span></div><div class="line"></div><div class="line">  <span class="comment"># Define on self, since it's  a class method</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">self</span>.<span class="title">method_missing</span><span class="params">(method_sym, *arguments, &amp;block)</span></span></div><div class="line">    <span class="comment"># the first argument is a Symbol, so you need to_s it if you want to pattern match</span></div><div class="line">    <span class="keyword">if</span> method_sym.to_s =~ <span class="regexp">/^find_by_(.*)$/</span></div><div class="line">      find($1.to_sym =&gt; arguments.first)</div><div class="line">    <span class="keyword">else</span></div><div class="line">      <span class="keyword">super</span></div><div class="line">    <span class="keyword">end</span></div><div class="line">  <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div></pre></td></tr></table></figure>
+<ul>
+<li>send，也是一个动态方法调用的强大工具，它的作用的将一个方法以参数的形式传递给对象。</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Box</span></span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">open_1</span></span></div><div class="line">    puts <span class="string">"open box"</span></div><div class="line">  <span class="keyword">end</span></div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">open_2</span></span></div><div class="line">    puts <span class="string">"open lock and open box"</span></div><div class="line">  <span class="keyword">end</span></div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">open_3</span></span></div><div class="line">    puts <span class="string">"It's a open box"</span></div><div class="line">  <span class="keyword">end</span></div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">open_4</span></span></div><div class="line">    puts <span class="string">"I can't open box"</span></div><div class="line">  <span class="keyword">end</span></div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">open_5</span></span></div><div class="line">    puts <span class="string">"Oh shit box!"</span></div><div class="line">  <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">box = Box.new</div><div class="line"></div><div class="line">box.send(<span class="string">"open_<span class="subst">#&#123;num&#125;</span>"</span>)</div></pre></td></tr></table></figure>
+<h3 id="6-What-are-the-various-Ruby-runtimes-and-how-are-they-different"><a href="#6-What-are-the-various-Ruby-runtimes-and-how-are-they-different" class="headerlink" title="6 What are the various Ruby runtimes, and how are they different?"></a>6 What are the various Ruby runtimes, and how are they different?</h3><ul>
+<li>mruby: ruby嵌入式版本。</li>
+<li>CRuby: Matz’s Ruby Interpreter(MRI),C语言实现</li>
+<li>JRuby: 基于JVM实现</li>
+<li>Rubinius: 基于LLVM(Low Level Virtual Machine)</li>
+<li>Opal: turn Ruby into JavaScript</li>
+<li>RubyMotion: write Cocoa native apps in Ruby</li>
+</ul>
+<h3 id="7-Define-“Matz”"><a href="#7-Define-“Matz”" class="headerlink" title="7 Define “Matz”"></a>7 Define “Matz”</h3><p>ruby之父,松本行弘,日本人</p>
+<h3 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h3><ul>
+<li>[1]<a href="http://awaxman11.github.io/blog/2013/08/05/what-is-the-difference-between-a-block/" target="_blank" rel="external">What Is the Difference Between a Block, a Proc, and a Lambda in Ruby?</a></li>
+<li>[2]<a href="http://technicalpickles.com/posts/using-method_missing-and-respond_to-to-create-dynamic-methods/" target="_blank" rel="external">Using method_missing and respond_to? to create dynamic methods</a></li>
+<li>[3]<a href="https://ruby-china.org/topics/4313" target="_blank" rel="external">浅析Ruby里的几个动态方法（一），send方法</a></li>
+</ul>
+]]></content>
+      
+        <categories>
+            
+            <category> Jobs </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> ruby </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[使用with_scope扩展查询]]></title>
+      <url>http://www.iprogrammr.com/03/20/2015/Using-with_scope.html</url>
+      <content type="html"><![CDATA[<p><a href="Move-Find-into-Model.html">上一篇</a>我们讲到将常用的find查询写入model中，<br>但是那样写还存在一个问题，就是我们在外部调用的时候不支持扩展，比如:</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@tasks = Task.find_incomplete(<span class="symbol">limit:</span> <span class="number">20</span>)</div></pre></td></tr></table></figure>
+<p>下面我们给出通过<code>with_scope</code>的方式使方法接受这样的扩展查询:</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">self</span>.<span class="title">find_incomplete</span> <span class="title">options=</span>&#123;&#125;</span></div><div class="line">  with_scope <span class="symbol">:find</span> =&gt; options <span class="keyword">do</span></div><div class="line">    find_all_by_complete(<span class="literal">false</span>, <span class="symbol">order:</span> <span class="string">'created_at DESC'</span>)</div><div class="line">  <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div></pre></td></tr></table></figure>
+]]></content>
+      
+        <categories>
+            
+            <category> Rails </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> with_scope </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[把常用的find写入model]]></title>
+      <url>http://www.iprogrammr.com/03/20/2015/Move-Find-into-Model.html</url>
+      <content type="html"><![CDATA[<p>对于一些比较常用的find查询，我们应该写入model中，以降低重复工作和方便日后维护修改。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Task</span> &lt; ActiveRecord::Base</span></div><div class="line">  belongs_to <span class="symbol">:project</span></div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">self</span>.<span class="title">find_incomplete</span></span></div><div class="line">    find_all_by_complete(<span class="symbol">:false</span>, <span class="symbol">order:</span> <span class="string">"created_at DESC"</span>)</div><div class="line">  <span class="keyword">end</span></div></pre></td></tr></table></figure>
+<p>那么我们在<code>controller</code>中就可以直接这么用:</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@tasks = Task.find_incomplete</div></pre></td></tr></table></figure>
+]]></content>
+      
+        <categories>
+            
+            <category> Rails </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Rails </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Find联合查询]]></title>
+      <url>http://www.iprogrammr.com/03/20/2015/Find-Through-Association.html</url>
+      <content type="html"><![CDATA[<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Project</span> &lt; ActiveRecord::Base</span></div><div class="line">  has_many <span class="symbol">:tasks</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Task</span> &lt; ActiveRecord:<span class="title">Base</span></span></div><div class="line">  belongs_to <span class="symbol">:project</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="comment">## 查找某一个项目下的未完成任务, 按时间逆序排序</span></div><div class="line">@project = Project.find(param[<span class="symbol">:id</span>])</div><div class="line">@task = @project.tasks.find_by_complete(<span class="literal">false</span>, <span class="symbol">order:</span> <span class="string">"created_at DESC"</span>)</div></pre></td></tr></table></figure>
+]]></content>
+      
+        <categories>
+            
+            <category> Rails </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> rails </tag>
+            
+            <tag> 联合查询 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[动态find_by方法]]></title>
+      <url>http://www.iprogrammr.com/03/20/2015/Dynamic-find-by-methods.html</url>
+      <content type="html"><![CDATA[<p>以下是两个<strong>find</strong>方法，我们可以把它改成<strong>find_by</strong>形式。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@tasks = Task.find(<span class="symbol">:all</span>, <span class="symbol">:conditions</span> =&gt; [<span class="string">'complete = ?'</span>, <span class="literal">false</span>])</div><div class="line"></div><div class="line">@tasks = Task.find(<span class="symbol">:first</span>, <span class="symbol">:conditions</span> =&gt; [<span class="string">'complete = ?'</span>, <span class="literal">false</span>], <span class="symbol">:order</span> =&gt; <span class="string">'created_at DESC'</span>)</div></pre></td></tr></table></figure>
+<p>对应的<code>find_by</code>形式为:</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@task = Task.find_all_by_complete(<span class="literal">false</span>)</div><div class="line"></div><div class="line">@task = Task.find_by_complete(<span class="literal">false</span>, <span class="symbol">:order</span> =&gt; <span class="string">"created_at DESC"</span>)</div></pre></td></tr></table></figure>
+]]></content>
+      
+        <categories>
+            
+            <category> Rails </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Rails </tag>
+            
+            <tag> find_by </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[使用实例变量进行cache]]></title>
+      <url>http://www.iprogrammr.com/03/20/2015/Caching-with-Instance-Variables.html</url>
+      <content type="html"><![CDATA[<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ApplicationController</span> &lt; ActionController::Base</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">current_user</span></span></div><div class="line">    User.find(session[<span class="symbol">:user_id</span>])</div><div class="line">  <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div></pre></td></tr></table></figure>
+<p>以上代码<code>User.find(session[:user_id])</code>在每次<code>current_user</code>被调用都将会执行一次查询。<br>如果改成如下将可以避免这个问题。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@current_user <span class="params">||</span>= User.find(sessions[<span class="symbol">:user_id</span>])</div></pre></td></tr></table></figure>
+]]></content>
+      
+        <categories>
+            
+            <category> Rails </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Rails </tag>
+            
+            <tag> Instance Variliables </tag>
+            
+            <tag> Cache </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[[Java性能优化]02 单例模式]]></title>
+      <url>http://www.iprogrammr.com/03/16/2015/design-pattern-singleton.html</url>
+      <content type="html"><![CDATA[<p>设计模式是前人工作的总结和提炼，是对某一特定问题的成熟解决方案。</p>
+<h2 id="1-单例模式的几个特点"><a href="#1-单例模式的几个特点" class="headerlink" title="1 单例模式的几个特点"></a>1 单例模式的几个特点</h2><ul>
+<li>最为普遍的模式之一</li>
+<li>一种对象创建模式，用于产生一个对象的具体实例，确保系统中一个类只产生一个实例</li>
+</ul>
+<h2 id="2-饿汉式-线程不安全"><a href="#2-饿汉式-线程不安全" class="headerlink" title="2 饿汉式(线程不安全)"></a>2 饿汉式(线程不安全)</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Singleton instance;</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span> <span class="params">()</span></span>&#123;&#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (instance == <span class="keyword">null</span>) &#123;</div><div class="line">            instance = <span class="keyword">new</span> Singleton();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> instance;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>显然上面这种lazy loading的方法， 当在多线程条件下将会产生多个实例。</p>
+<h2 id="3-饿汉式-线程安全"><a href="#3-饿汉式-线程安全" class="headerlink" title="3 饿汉式(线程安全)"></a>3 饿汉式(线程安全)</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Singleton instance = <span class="keyword">null</span>;</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span> <span class="params">()</span></span>&#123;&#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (instance == <span class="keyword">null</span>) &#123;</div><div class="line">            instance = <span class="keyword">new</span> Singleton();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> instance;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>虽然这是线程安全的，但是不仅创建的时候会同步，甚至每次读取的时候都必须同步。<br>这样严重影响程序的运行效率。</p>
+<h2 id="4-双重校验"><a href="#4-双重校验" class="headerlink" title="4 双重校验"></a>4 双重校验</h2><p>为了避免在创建之后还是同步，我们引入双重校验<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span></span>&#123;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> Singleton instance = <span class="keyword">null</span>;</div><div class="line">	<span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span></span>&#123;&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span></span>&#123;</div><div class="line">		<span class="keyword">if</span>(instance == <span class="keyword">null</span>)&#123;</div><div class="line">			<span class="keyword">synchronized</span>(Singleton.class)&#123;</div><div class="line">				<span class="keyword">if</span>(instance == <span class="keyword">null</span>)&#123;</div><div class="line">					instance = <span class="keyword">new</span> Singleton();</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>由于<code>instance = new Singleton();</code>不是一个原子操作，需要把instance声明成<code>volatile</code></p>
+<h2 id="5-饿汉式"><a href="#5-饿汉式" class="headerlink" title="5 饿汉式"></a>5 饿汉式</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Singleton instance = <span class="keyword">new</span> Singleton();</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span> <span class="params">()</span></span>&#123;&#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> instance;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> 这种方式基于classloader机制避免了多线程的同步问题，不过，instance在类装载时就实例化，<br> 虽然导致类装载的原因有很多种，在单例模式中大多数都是调用getInstance方法，但是如果类中包含<br> 其他静态方法被调用将导致类装载。</p>
+<h2 id="6-静态内部类"><a href="#6-静态内部类" class="headerlink" title="6 静态内部类"></a>6 静态内部类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SingletonHolder</span> </span>&#123;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton INSTANCE = <span class="keyword">new</span> Singleton();</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span> <span class="params">()</span></span>&#123;&#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> SingletonHolder.INSTANCE;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面这种方式，使用JVM本身机制保证了线程安全问题；由于 SingletonHolder 是私有的，除了 getInstance() 之外没有办法访问它，因此它只有在getInstance()被调用时才会真正创建；同时读取实例的时候不会进行同步，没有性能缺陷；也不依赖 JDK 版本。</p>
+<h2 id="7-枚举"><a href="#7-枚举" class="headerlink" title="7 枚举"></a>7 枚举</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Singleton &#123;</div><div class="line">    INSTANCE;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>默认枚举实例的创建是线程安全的，所以不需要担心线程安全的问题。是不是有点简单了？下面来点详细代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Singleton &#123;</div><div class="line"></div><div class="line">    INSTANCE;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> String name;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeThing</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(name + <span class="string">" is doing something now..."</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.name = name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span></span>&#123;</div><div class="line">    <span class="meta">@Test</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testSingleton</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        Boss b1 = Boss.INSTANCE;</div><div class="line">        b1.setName(<span class="string">"张三"</span>);</div><div class="line">        b1.doSomeThing();<span class="comment">//张三 is doing something now...</span></div><div class="line"></div><div class="line">        Boss b2 = Boss.INSTANCE;</div><div class="line">        b2.doSomeThing();<span class="comment">//张三 is doing something now...</span></div><div class="line"></div><div class="line">        System.out.println(b1.equals(b2));<span class="comment">//true</span></div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>从上面可以看出<code>b1</code>和<code>b2</code>是同一个实例，而且这种方式绝对防止反射调用私有构造器来破坏单例。</p>
+<h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><ul>
+<li>[1]  <a href="http://blog.csdn.net/haoel/article/details/4028232" target="_blank" rel="external">深入浅出单实例Singleton设计模式</a></li>
+<li>[2]  <a href="http://cantellow.iteye.com/blog/838473" target="_blank" rel="external">单例模式的七种写法</a></li>
+<li>[3]  <a href="http://www.cnblogs.com/yjmyzz/p/4282067.html" target="_blank" rel="external">单例(Singleton)的枚举(enum)实现</a></li>
+<li>[4]  <a href="">Java性能优化2.1.1</a></li>
+</ul>
+]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> 单例模式 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[[Java性能优化]01 Java性能概述]]></title>
+      <url>http://www.iprogrammr.com/03/15/2015/java-performace.html</url>
+      <content type="html"><![CDATA[<p>web服务器的两个性能参数：服务器响应时间，吞吐量。</p>
+<h2 id="1-程序性能的几个表现方面"><a href="#1-程序性能的几个表现方面" class="headerlink" title="1 程序性能的几个表现方面"></a>1 程序性能的几个表现方面</h2><ul>
+<li>执行速度</li>
+<li>内存分配</li>
+<li>启动时间</li>
+<li>负载承受能力</li>
+</ul>
+<h2 id="2-性能的几个参考指标"><a href="#2-性能的几个参考指标" class="headerlink" title="2 性能的几个参考指标"></a>2 性能的几个参考指标</h2><ul>
+<li>执行时间</li>
+<li>CPU时间</li>
+<li>内存分配</li>
+<li>磁盘吞吐量</li>
+<li>网络吞吐量</li>
+<li>响应时间</li>
+</ul>
+<h2 id="3-木桶原理"><a href="#3-木桶原理" class="headerlink" title="3 木桶原理"></a>3 木桶原理</h2><p>根据木桶原理，系统的最终性能取决于系统中性能表现最差的组件。<br>因此，我们应该更注重最差性能的组件优化。</p>
+<p><strong>最可能成为瓶颈的集中资源</strong>：<br><code>磁盘I/O</code>、<code>网络操作</code>、<code>CPU</code>、<code>异常</code>、<code>数据库</code>、<code>锁竞争</code>、<code>内存</code>。</p>
+<h2 id="4-Amdahl定律"><a href="#4-Amdahl定律" class="headerlink" title="4 Amdahl定律"></a>4 Amdahl定律</h2><ul>
+<li>加速比</li>
+</ul>
+<p>加速比 = 优化前耗时/优化后耗时</p>
+<ul>
+<li>Amdahl定律<br>Speedup &lt;= 1/(F+(1-F)/N)</li>
+</ul>
+<p>Speedup：加速比<br>F: 系统串行化比重<br>N: CPU数量</p>
+<p>根据Amdahl定律，使用多核CPU对系统进行优化，优化的效果取决于CPU的数量及系统中串行化的程序比重。CPU越多，串行化比重越低，则优化效果越好。</p>
+<h2 id="5-性能调优的几个层次"><a href="#5-性能调优的几个层次" class="headerlink" title="5 性能调优的几个层次"></a>5 性能调优的几个层次</h2><ol>
+<li>设计调优</li>
+<li>代码调优</li>
+<li>JVM调优</li>
+<li>数据库调优</li>
+<li>操作系统调优</li>
+</ol>
+<h2 id="6-基本调优策略和手段"><a href="#6-基本调优策略和手段" class="headerlink" title="6 基本调优策略和手段"></a>6 基本调优策略和手段</h2><ul>
+<li><p>优化的步骤<br>明确的性能目标–&gt; 优化后的充分测试和性能监控</p>
+</li>
+<li><p>注意事项： 要有充分明确的优化目标，不要为了优化而优化。</p>
+</li>
+</ul>
+]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 性能优化 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[英语日期的转换]]></title>
+      <url>http://www.iprogrammr.com/01/11/2015/java-text-ParseException-Unparseable-date.html</url>
+      <content type="html"><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>需要将日期字符串“Dec 2014”转换成日期。</p>
+<h3 id="版本一"><a href="#版本一" class="headerlink" title="版本一"></a>版本一</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.util.*;</div><div class="line"><span class="keyword">import</span> java.io.*;</div><div class="line"><span class="keyword">import</span> java.text.*;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span></span></div><div class="line">&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ParseException </span>&#123;</div><div class="line">        DateFormat format = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"MMM yyyy"</span>);</div><div class="line">        format.setLenient(<span class="keyword">true</span>);</div><div class="line">        Date date = format.parse(<span class="string">"Jul 2014"</span>);</div><div class="line">        System.out.println(date);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>编译执行后产生异常:</p>
+<blockquote>
+<p>Exception in thread “main” java.text.ParseException: Unparseable date: “Jul/2014”<br>    at java.text.DateFormat.parse(DateFormat.java:357)<br>    at Main.main(Main.java:10)</p>
+</blockquote>
+<h3 id="修改版"><a href="#修改版" class="headerlink" title="修改版"></a>修改版</h3><p>发现这个问题后在网络上搜索，发现对SimpleDateFormat的用法基本与上面一致。一直找不到<br>为什么我会产生异常。后来在<br><a href="http://stackoverflow.com/questions/19861642/date-format-parse-exception-eee-mmm-dd-hhmmss-z-yyyy" target="_blank" rel="external">stackoverflow</a>上找到答案,<br>在创建format时应该设定Locale.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//仅修改第8行</span></div><div class="line">DateFormat format = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"MMM yyyy"</span>, Locale.ENGLISH);</div></pre></td></tr></table></figure>
+]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Unparseable date </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[在ubuntu上搭建一个自己的免费vpn]]></title>
+      <url>http://www.iprogrammr.com/11/30/2015/setup-your-own-vpn-on-ubuntu.html</url>
+      <content type="html"><![CDATA[<p>在我们的日常工作和生活中经常会需要用到VPN来访问一些国外网站，<br>之前我一直在使用<a href="www.vcupboss.com">vcupboss</a>的vpn，买了1G，只是在访问<br>google的时候用下，现在也只用了几百兆。由于最近买了一个美国服务器，79/<br>月，所以干脆就尝试自己搭建一个vpn。这样的话就不用受流量的限制了。</p>
+<p>下面是一些基本的安装步骤:</p>
+<h3 id="0-大前提"><a href="#0-大前提" class="headerlink" title="0 大前提"></a>0 大前提</h3><ul>
+<li>一台国外服务器，美国、香港云主机都可。</li>
+<li>SSH工具:我的是fedora系统所以直接使用ssh，windows推荐使用securecrt</li>
+</ul>
+<h3 id="1-登入远程服务器，在root权限下操作"><a href="#1-登入远程服务器，在root权限下操作" class="headerlink" title="1 登入远程服务器，在root权限下操作"></a>1 登入远程服务器，在root权限下操作</h3><p>以下命令都是在执行<code>su</code>获取root权限后的操作，你也可以直接都在前面加上<br><code>sudo</code></p>
+<h3 id="2、安装PPTPD"><a href="#2、安装PPTPD" class="headerlink" title="2、安装PPTPD"></a>2、安装PPTPD</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt-get install pptpd</div></pre></td></tr></table></figure>
+<h3 id="3、编辑pptpd-conf文件，设置服务器ip和远程客户端ip"><a href="#3、编辑pptpd-conf文件，设置服务器ip和远程客户端ip" class="headerlink" title="3、编辑pptpd.conf文件，设置服务器ip和远程客户端ip"></a>3、编辑pptpd.conf文件，设置服务器ip和远程客户端ip</h3><p>使用vim打开<em>pptpd.conf</em>文件(<code>vi /etc/pptpd.conf</code>)<br>取消注释下面内容:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">option /etc/ppp/pptpd-options</div><div class="line">localip 192.168.0.1</div><div class="line">remoteip 192.168.0.234-238,192.168.0.245</div></pre></td></tr></table></figure></p>
+<h3 id="4、添加登陆账户"><a href="#4、添加登陆账户" class="headerlink" title="4、添加登陆账户"></a>4、添加登陆账户</h3><p>修改/etc/ppp/chap-secrets文件(<code>vi /etc/ppp/chap-secrets</code>),添加一行用户<br>设置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">### 用户名 pptpd "密码" *</span></div><div class="line">username pptpd password *</div></pre></td></tr></table></figure>
+<blockquote>
+<p>每个字段间直接用一个空格或tab隔开。<br>星号(*)代表允许接入的ip可以是任意ip。</p>
+</blockquote>
+<p><strong>为了使服务器可以跳出局域网，所以我们还需要配置转发。</strong></p>
+<h3 id="5、设置DNS解析"><a href="#5、设置DNS解析" class="headerlink" title="5、设置DNS解析"></a>5、设置DNS解析</h3><p>编辑pptpd-options文件(<code>vi /etc/ppp/pptpd-options</code>)<br>找到ms-dns，取消掉注释，并修改DNS地址为8.8.8.8 和 8.8.4.4</p>
+<h3 id="6、开启转发"><a href="#6、开启转发" class="headerlink" title="6、开启转发"></a>6、开启转发</h3><p>编辑/etc/sysctl.conf(<code>vi /etc/sysctl.conf</code>),<br>通过取消注释以下内容来打开内和ip转发:</p>
+<p><code>net.ipv4.ip_forward=1</code></p>
+<h3 id="7、安装iptables并设置自动加载规则"><a href="#7、安装iptables并设置自动加载规则" class="headerlink" title="7、安装iptables并设置自动加载规则"></a>7、安装iptables并设置自动加载规则</h3><p>安装iptables:</p>
+<pre><code>apt-get install iptables
+</code></pre><p>使系统支持NAT:</p>
+<pre><code>iptables -t nat -I POSTROUTING -j MASQUERADE
+iptables -I FORWARD -p tcp --syn -i ppp+ -j TCPMSS --set-mss 1356
+</code></pre><p>为了能够将我们之前更改的iptables 的规则保存下来并总是生效，还需要执行以下操作：</p>
+<ul>
+<li>使用iptables-save保存规则：<code>iptables-save &gt; /etc/iptables-rules</code></li>
+<li>修改<em>/etc/network/interfaces</em> 文件，找到 eth0 部分，在eth0设置最末尾<br>加上下面这句：<code>pre-up iptables-restore &lt; /etc/iptables-rules</code><br>这样当网卡 eth0 被加载的时候就会自动载入我们预先用iptables-save 保存下的配置。</li>
+</ul>
+<h3 id="8、重新启动服务"><a href="#8、重新启动服务" class="headerlink" title="8、重新启动服务"></a>8、重新启动服务</h3><pre><code>/etc/init.d/pptpd restart
+</code></pre><h3 id="9、安装完成"><a href="#9、安装完成" class="headerlink" title="9、安装完成"></a>9、安装完成</h3><p>至此，vpn安装完成。你只需在你需要访问外网的机器上(PC，手机),设置vpn连<br>接，使用PPTP协议即可。畅快的上网吧！！</p>
+]]></content>
+      
+        <categories>
+            
+            <category> tools </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> vpn </tag>
+            
+        </tags>
+        
+    </entry>
+    
+  
+  
+</search>
