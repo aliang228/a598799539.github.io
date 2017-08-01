@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.iprogrammr.com/"/>
-  <updated>2017-07-28T08:09:14.673Z</updated>
+  <updated>2017-08-01T03:00:24.142Z</updated>
   <id>http://www.iprogrammr.com/</id>
   
   <author>
@@ -14,6 +14,69 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>CommonsIO常用工具方法</title>
+    <link href="http://www.iprogrammr.com/07/31/2017/Commons-io-usual-methods.html"/>
+    <id>http://www.iprogrammr.com/07/31/2017/Commons-io-usual-methods.html</id>
+    <published>2017-07-31T11:10:00.000Z</published>
+    <updated>2017-08-01T03:00:24.142Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="1-FileUtils"><a href="#1-FileUtils" class="headerlink" title="1 FileUtils"></a>1 FileUtils</h3><ul>
+<li>获取文件：<code>getFile(&quot;src&quot;, &quot;main&quot;, &quot;java&quot;)</code>、<code>getFile(parent, &quot;src&quot;)</code><br><strong>常用目录(Path结尾返回String,否则返回File)</strong></li>
+<li>系统临时文件目录：<code>getTempDirectoryPath()</code>、<code>getTempDirectory()</code></li>
+<li>Home目录：<code>getUserDirectoryPath()</code>、<code>getUserDirectory()</code></li>
+<li>文件输入输出流：<code>openInputStream(final File file)</code>、<code>openOutputStream(final File file, final boolean append)</code></li>
+<li>文件大小单位转换(字节数转K、M、G等)： <code>byteCountToDisplaySize(final long size)</code></li>
+<li>Touch文件(创建一个空文件或者更新文件更新时间)：<code>touch(final File file)</code></li>
+<li><p>获取目录下文件列表(ls 不包含目录,包含递归子目录)：<code>listFiles(final File directory, final IOFileFilter fileFilter, final IOFileFilter dirFilter)</code></p>
+<blockquote>
+<p>关于IOFileFilter: new WildcardFileFilter(“<em>.</em>“); 可以正则匹配</p>
+</blockquote>
+</li>
+<li><p>获取目录下文件与目录列表(包含递归子目录)： <code>listFilesAndDirs(final File directory, final IOFileFilter fileFilter, final IOFileFilter dirFilter)</code></p>
+</li>
+<li>获取目录文件(是否递归子目录)：<code>listFiles(final File directory, final String[] extensions, final boolean recursive)</code></li>
+<li>文件比较：<code>contentEquals(final File file1, final File file2)</code>、<code>isFileNewer(final File file, final File reference)</code></li>
+<li>URL与File：<code>toFile(final URL url)</code>、<code>toURLs(final File[] files)</code></li>
+<li>文件拷贝：<code>copyFileToDirectory(final File srcFile, final File destDir)</code>、<code>copyFile(final File srcFile, final File destFile)</code>、<code>copyToDirectory(final File src, final File destDir)</code></li>
+<li>目录拷贝：<code>copyDirectory(final File srcDir, final File destDir)</code></li>
+<li>删除与清理：<code>deleteDirectory(final File directory)</code>、<code>cleanDirectory(final File directory)</code>(不删除当前目录)、<code>forceDelete(final File file)</code></li>
+<li>读文件：<code>readFileToString(final File file, final String encoding)</code>、<code>readFileToByteArray(final File file)</code>、<code>readLines(final File file, final Charset encoding)</code></li>
+<li>写文件：<code>writeStringToFile(final File file, final String data, final Charset encoding,final boolean append)</code>、<code>writeByteArrayToFile(final File file, final byte[] data)</code>、<code>writeLines(final File file, final Collection&lt;?&gt; lines)</code></li>
+<li>新建文件夹：<code>forceMkdir(final File directory)</code></li>
+<li>文件大小：<code>sizeOf(final File file)</code>、<code>sizeOfDirectory(final File directory)</code></li>
+<li>移动文件：<code>moveDirectory(final File srcDir, final File destDir)</code>、<code>moveFile(final File srcFile, final File destFile)</code></li>
+</ul>
+<h3 id="2-FilenameUtils"><a href="#2-FilenameUtils" class="headerlink" title="2 FilenameUtils"></a>2 FilenameUtils</h3><ul>
+<li>路径规范化：<code>normalize(final String filename)</code></li>
+<li>拼接：<code>concat(final String basePath, final String fullFilenameToAdd)</code></li>
+<li>前置目录：<code>getPrefix(final String filename)</code></li>
+<li>获取文件目录：<code>getPath(final String filename)</code></li>
+<li>获取文件名称：<code>getName(final String filename)</code>(带后缀)、<code>getBaseName(final String filename)</code></li>
+<li>后缀：<code>getExtension(final String filename)</code>、<code>isExtension(final String filename, final String extension)</code></li>
+</ul>
+<h3 id="3-FileSystemUtils"><a href="#3-FileSystemUtils" class="headerlink" title="3 FileSystemUtils"></a>3 FileSystemUtils</h3><ul>
+<li>剩余空间：<code>freeSpaceOS(final String path, final int os, final boolean kb, final long timeout)</code></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      CommonsIO常用工具方法
+    
+    </summary>
+    
+      <category term="Java" scheme="http://www.iprogrammr.com/categories/Java/"/>
+    
+    
+      <category term="Java" scheme="http://www.iprogrammr.com/tags/Java/"/>
+    
+      <category term="Commons IO" scheme="http://www.iprogrammr.com/tags/Commons-IO/"/>
+    
+      <category term="Utils" scheme="http://www.iprogrammr.com/tags/Utils/"/>
+    
+  </entry>
   
   <entry>
     <title>Eclipse常用快捷键</title>
@@ -790,54 +853,6 @@
       <category term="Instance Variliables" scheme="http://www.iprogrammr.com/tags/Instance-Variliables/"/>
     
       <category term="Cache" scheme="http://www.iprogrammr.com/tags/Cache/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>[Java性能优化]02 单例模式</title>
-    <link href="http://www.iprogrammr.com/03/16/2015/design-pattern-singleton.html"/>
-    <id>http://www.iprogrammr.com/03/16/2015/design-pattern-singleton.html</id>
-    <published>2015-03-16T14:15:00.000Z</published>
-    <updated>2017-07-10T03:01:41.739Z</updated>
-    
-    <content type="html"><![CDATA[<p>设计模式是前人工作的总结和提炼，是对某一特定问题的成熟解决方案。</p>
-<h2 id="1-单例模式的几个特点"><a href="#1-单例模式的几个特点" class="headerlink" title="1 单例模式的几个特点"></a>1 单例模式的几个特点</h2><ul>
-<li>最为普遍的模式之一</li>
-<li>一种对象创建模式，用于产生一个对象的具体实例，确保系统中一个类只产生一个实例</li>
-</ul>
-<h2 id="2-饿汉式-线程不安全"><a href="#2-饿汉式-线程不安全" class="headerlink" title="2 饿汉式(线程不安全)"></a>2 饿汉式(线程不安全)</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Singleton instance;</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span> <span class="params">()</span></span>&#123;&#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (instance == <span class="keyword">null</span>) &#123;</div><div class="line">            instance = <span class="keyword">new</span> Singleton();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> instance;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>显然上面这种lazy loading的方法， 当在多线程条件下将会产生多个实例。</p>
-<h2 id="3-饿汉式-线程安全"><a href="#3-饿汉式-线程安全" class="headerlink" title="3 饿汉式(线程安全)"></a>3 饿汉式(线程安全)</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Singleton instance = <span class="keyword">null</span>;</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span> <span class="params">()</span></span>&#123;&#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (instance == <span class="keyword">null</span>) &#123;</div><div class="line">            instance = <span class="keyword">new</span> Singleton();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> instance;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>虽然这是线程安全的，但是不仅创建的时候会同步，甚至每次读取的时候都必须同步。<br>这样严重影响程序的运行效率。</p>
-<h2 id="4-双重校验"><a href="#4-双重校验" class="headerlink" title="4 双重校验"></a>4 双重校验</h2><p>为了避免在创建之后还是同步，我们引入双重校验<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span></span>&#123;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> Singleton instance = <span class="keyword">null</span>;</div><div class="line">	<span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span></span>&#123;&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span></span>&#123;</div><div class="line">		<span class="keyword">if</span>(instance == <span class="keyword">null</span>)&#123;</div><div class="line">			<span class="keyword">synchronized</span>(Singleton.class)&#123;</div><div class="line">				<span class="keyword">if</span>(instance == <span class="keyword">null</span>)&#123;</div><div class="line">					instance = <span class="keyword">new</span> Singleton();</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>由于<code>instance = new Singleton();</code>不是一个原子操作，需要把instance声明成<code>volatile</code></p>
-<h2 id="5-饿汉式"><a href="#5-饿汉式" class="headerlink" title="5 饿汉式"></a>5 饿汉式</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Singleton instance = <span class="keyword">new</span> Singleton();</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span> <span class="params">()</span></span>&#123;&#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> instance;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p> 这种方式基于classloader机制避免了多线程的同步问题，不过，instance在类装载时就实例化，<br> 虽然导致类装载的原因有很多种，在单例模式中大多数都是调用getInstance方法，但是如果类中包含<br> 其他静态方法被调用将导致类装载。</p>
-<h2 id="6-静态内部类"><a href="#6-静态内部类" class="headerlink" title="6 静态内部类"></a>6 静态内部类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SingletonHolder</span> </span>&#123;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton INSTANCE = <span class="keyword">new</span> Singleton();</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span> <span class="params">()</span></span>&#123;&#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> SingletonHolder.INSTANCE;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>上面这种方式，使用JVM本身机制保证了线程安全问题；由于 SingletonHolder 是私有的，除了 getInstance() 之外没有办法访问它，因此它只有在getInstance()被调用时才会真正创建；同时读取实例的时候不会进行同步，没有性能缺陷；也不依赖 JDK 版本。</p>
-<h2 id="7-枚举"><a href="#7-枚举" class="headerlink" title="7 枚举"></a>7 枚举</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Singleton &#123;</div><div class="line">    INSTANCE;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>默认枚举实例的创建是线程安全的，所以不需要担心线程安全的问题。是不是有点简单了？下面来点详细代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Singleton &#123;</div><div class="line"></div><div class="line">    INSTANCE;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> String name;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeThing</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(name + <span class="string">" is doing something now..."</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.name = name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span></span>&#123;</div><div class="line">    <span class="meta">@Test</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testSingleton</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        Boss b1 = Boss.INSTANCE;</div><div class="line">        b1.setName(<span class="string">"张三"</span>);</div><div class="line">        b1.doSomeThing();<span class="comment">//张三 is doing something now...</span></div><div class="line"></div><div class="line">        Boss b2 = Boss.INSTANCE;</div><div class="line">        b2.doSomeThing();<span class="comment">//张三 is doing something now...</span></div><div class="line"></div><div class="line">        System.out.println(b1.equals(b2));<span class="comment">//true</span></div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>从上面可以看出<code>b1</code>和<code>b2</code>是同一个实例，而且这种方式绝对防止反射调用私有构造器来破坏单例。</p>
-<h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><ul>
-<li>[1]  <a href="http://blog.csdn.net/haoel/article/details/4028232" target="_blank" rel="external">深入浅出单实例Singleton设计模式</a></li>
-<li>[2]  <a href="http://cantellow.iteye.com/blog/838473" target="_blank" rel="external">单例模式的七种写法</a></li>
-<li>[3]  <a href="http://www.cnblogs.com/yjmyzz/p/4282067.html" target="_blank" rel="external">单例(Singleton)的枚举(enum)实现</a></li>
-<li>[4]  <a href="">Java性能优化2.1.1</a></li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      单例模式，单例模式的几个特点,单例模式的几种写法
-    
-    </summary>
-    
-      <category term="java" scheme="http://www.iprogrammr.com/categories/java/"/>
-    
-    
-      <category term="java" scheme="http://www.iprogrammr.com/tags/java/"/>
-    
-      <category term="单例模式" scheme="http://www.iprogrammr.com/tags/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/"/>
     
   </entry>
   

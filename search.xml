@@ -4,6 +4,67 @@
   
     
     <entry>
+      <title><![CDATA[CommonsIO常用工具方法]]></title>
+      <url>http://www.iprogrammr.com/07/31/2017/Commons-io-usual-methods.html</url>
+      <content type="html"><![CDATA[<h3 id="1-FileUtils"><a href="#1-FileUtils" class="headerlink" title="1 FileUtils"></a>1 FileUtils</h3><ul>
+<li>获取文件：<code>getFile(&quot;src&quot;, &quot;main&quot;, &quot;java&quot;)</code>、<code>getFile(parent, &quot;src&quot;)</code><br><strong>常用目录(Path结尾返回String,否则返回File)</strong></li>
+<li>系统临时文件目录：<code>getTempDirectoryPath()</code>、<code>getTempDirectory()</code></li>
+<li>Home目录：<code>getUserDirectoryPath()</code>、<code>getUserDirectory()</code></li>
+<li>文件输入输出流：<code>openInputStream(final File file)</code>、<code>openOutputStream(final File file, final boolean append)</code></li>
+<li>文件大小单位转换(字节数转K、M、G等)： <code>byteCountToDisplaySize(final long size)</code></li>
+<li>Touch文件(创建一个空文件或者更新文件更新时间)：<code>touch(final File file)</code></li>
+<li><p>获取目录下文件列表(ls 不包含目录,包含递归子目录)：<code>listFiles(final File directory, final IOFileFilter fileFilter, final IOFileFilter dirFilter)</code></p>
+<blockquote>
+<p>关于IOFileFilter: new WildcardFileFilter(“<em>.</em>“); 可以正则匹配</p>
+</blockquote>
+</li>
+<li><p>获取目录下文件与目录列表(包含递归子目录)： <code>listFilesAndDirs(final File directory, final IOFileFilter fileFilter, final IOFileFilter dirFilter)</code></p>
+</li>
+<li>获取目录文件(是否递归子目录)：<code>listFiles(final File directory, final String[] extensions, final boolean recursive)</code></li>
+<li>文件比较：<code>contentEquals(final File file1, final File file2)</code>、<code>isFileNewer(final File file, final File reference)</code></li>
+<li>URL与File：<code>toFile(final URL url)</code>、<code>toURLs(final File[] files)</code></li>
+<li>文件拷贝：<code>copyFileToDirectory(final File srcFile, final File destDir)</code>、<code>copyFile(final File srcFile, final File destFile)</code>、<code>copyToDirectory(final File src, final File destDir)</code></li>
+<li>目录拷贝：<code>copyDirectory(final File srcDir, final File destDir)</code></li>
+<li>删除与清理：<code>deleteDirectory(final File directory)</code>、<code>cleanDirectory(final File directory)</code>(不删除当前目录)、<code>forceDelete(final File file)</code></li>
+<li>读文件：<code>readFileToString(final File file, final String encoding)</code>、<code>readFileToByteArray(final File file)</code>、<code>readLines(final File file, final Charset encoding)</code></li>
+<li>写文件：<code>writeStringToFile(final File file, final String data, final Charset encoding,final boolean append)</code>、<code>writeByteArrayToFile(final File file, final byte[] data)</code>、<code>writeLines(final File file, final Collection&lt;?&gt; lines)</code></li>
+<li>新建文件夹：<code>forceMkdir(final File directory)</code></li>
+<li>文件大小：<code>sizeOf(final File file)</code>、<code>sizeOfDirectory(final File directory)</code></li>
+<li>移动文件：<code>moveDirectory(final File srcDir, final File destDir)</code>、<code>moveFile(final File srcFile, final File destFile)</code></li>
+</ul>
+<h3 id="2-FilenameUtils"><a href="#2-FilenameUtils" class="headerlink" title="2 FilenameUtils"></a>2 FilenameUtils</h3><ul>
+<li>路径规范化：<code>normalize(final String filename)</code></li>
+<li>拼接：<code>concat(final String basePath, final String fullFilenameToAdd)</code></li>
+<li>前置目录：<code>getPrefix(final String filename)</code></li>
+<li>获取文件目录：<code>getPath(final String filename)</code></li>
+<li>获取文件名称：<code>getName(final String filename)</code>(带后缀)、<code>getBaseName(final String filename)</code></li>
+<li>后缀：<code>getExtension(final String filename)</code>、<code>isExtension(final String filename, final String extension)</code></li>
+</ul>
+<h3 id="3-FileSystemUtils"><a href="#3-FileSystemUtils" class="headerlink" title="3 FileSystemUtils"></a>3 FileSystemUtils</h3><ul>
+<li>剩余空间：<code>freeSpaceOS(final String path, final int os, final boolean kb, final long timeout)</code></li>
+</ul>
+]]></content>
+      
+        <categories>
+            
+            <category> Java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Java </tag>
+            
+            <tag> Commons IO </tag>
+            
+            <tag> Utils </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[Eclipse常用快捷键]]></title>
       <url>http://www.iprogrammr.com/07/28/2017/Eclipse-Usual-KeyShot.html</url>
       <content type="html"><![CDATA[<h3 id="编辑"><a href="#编辑" class="headerlink" title="编辑"></a>编辑</h3><ul>
