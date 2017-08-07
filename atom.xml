@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.iprogrammr.com/"/>
-  <updated>2017-08-01T03:00:24.142Z</updated>
+  <updated>2017-08-07T01:33:41.801Z</updated>
   <id>http://www.iprogrammr.com/</id>
   
   <author>
@@ -14,6 +14,37 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>《重生》阅读</title>
+    <link href="http://www.iprogrammr.com/08/06/2017/Reborn-Reading-Note.html"/>
+    <id>http://www.iprogrammr.com/08/06/2017/Reborn-Reading-Note.html</id>
+    <published>2017-08-06T13:10:00.000Z</published>
+    <updated>2017-08-07T01:33:41.801Z</updated>
+    
+    <content type="html"><![CDATA[<ul>
+<li>我们必须主动升级自己的操作系统。</li>
+<li>我们的操作系统主要由概念和方法论构成。</li>
+<li>我们要把自己进化为多任务、多模式的操作系统。</li>
+<li>不断进化的操作系统要与、也只能与其他不断进化的操作系统沟通</li>
+<li>沟通的目的是分享，分享最终会形成惊喜</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      想到了，就去做，做到了，才算践行，做不到，没用。
+    
+    </summary>
+    
+      <category term="思考" scheme="http://www.iprogrammr.com/categories/%E6%80%9D%E8%80%83/"/>
+    
+    
+      <category term="践行" scheme="http://www.iprogrammr.com/tags/%E8%B7%B5%E8%A1%8C/"/>
+    
+      <category term="重生" scheme="http://www.iprogrammr.com/tags/%E9%87%8D%E7%94%9F/"/>
+    
+  </entry>
   
   <entry>
     <title>CommonsIO常用工具方法</title>
@@ -824,35 +855,6 @@
       <category term="Rails" scheme="http://www.iprogrammr.com/tags/Rails/"/>
     
       <category term="find_by" scheme="http://www.iprogrammr.com/tags/find-by/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>使用实例变量进行cache</title>
-    <link href="http://www.iprogrammr.com/03/20/2015/Caching-with-Instance-Variables.html"/>
-    <id>http://www.iprogrammr.com/03/20/2015/Caching-with-Instance-Variables.html</id>
-    <published>2015-03-20T01:27:00.000Z</published>
-    <updated>2017-07-10T03:01:41.734Z</updated>
-    
-    <content type="html"><![CDATA[<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ApplicationController</span> &lt; ActionController::Base</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">current_user</span></span></div><div class="line">    User.find(session[<span class="symbol">:user_id</span>])</div><div class="line">  <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div></pre></td></tr></table></figure>
-<p>以上代码<code>User.find(session[:user_id])</code>在每次<code>current_user</code>被调用都将会执行一次查询。<br>如果改成如下将可以避免这个问题。</p>
-<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@current_user <span class="params">||</span>= User.find(sessions[<span class="symbol">:user_id</span>])</div></pre></td></tr></table></figure>
-]]></content>
-    
-    <summary type="html">
-    
-      使用实例变量进行cache
-    
-    </summary>
-    
-      <category term="Rails" scheme="http://www.iprogrammr.com/categories/Rails/"/>
-    
-    
-      <category term="Rails" scheme="http://www.iprogrammr.com/tags/Rails/"/>
-    
-      <category term="Instance Variliables" scheme="http://www.iprogrammr.com/tags/Instance-Variliables/"/>
-    
-      <category term="Cache" scheme="http://www.iprogrammr.com/tags/Cache/"/>
     
   </entry>
   
