@@ -4,6 +4,30 @@
   
     
     <entry>
+      <title><![CDATA[An Webpack Error: You may need an appropriate loader to handle this file type]]></title>
+      <url>http://www.iprogrammr.com/08/17/2017/You-may-need-an-appropriate-loader-to-handle-this-file-type.html</url>
+      <content type="html"><![CDATA[<h3 id="Error"><a href="#Error" class="headerlink" title="Error"></a>Error</h3><blockquote>
+<p>Module parse failed: …/node_modules/semantic-ui-css/themes\default\assets\fonts\icons.woff2 Unexpected character ‘ ‘ (1:4)   You may need an appropriate loader to handle this file type. (Source code omitted for this binary file)</p>
+</blockquote>
+<h3 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h3><p>add the followings to your loaders config:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">test</span>:<span class="regexp">/\.(png|jpg|woff|svg|eot|ttf|woff2)$/</span>,</div><div class="line">  <span class="attr">loader</span>:<span class="string">'url-loader?limit=8192&amp;name=images/[name].[ext]'</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+]]></content>
+      
+        <categories>
+            
+            <category> 前端 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> react </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[《重生》阅读]]></title>
       <url>http://www.iprogrammr.com/08/06/2017/Reborn-Reading-Note.html</url>
       <content type="html"><![CDATA[<ul>

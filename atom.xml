@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.iprogrammr.com/"/>
-  <updated>2017-08-07T01:33:41.801Z</updated>
+  <updated>2017-08-17T09:05:04.852Z</updated>
   <id>http://www.iprogrammr.com/</id>
   
   <author>
@@ -14,6 +14,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>An Webpack Error: You may need an appropriate loader to handle this file type</title>
+    <link href="http://www.iprogrammr.com/08/17/2017/You-may-need-an-appropriate-loader-to-handle-this-file-type.html"/>
+    <id>http://www.iprogrammr.com/08/17/2017/You-may-need-an-appropriate-loader-to-handle-this-file-type.html</id>
+    <published>2017-08-17T09:01:00.000Z</published>
+    <updated>2017-08-17T09:05:04.852Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Error"><a href="#Error" class="headerlink" title="Error"></a>Error</h3><blockquote>
+<p>Module parse failed: …/node_modules/semantic-ui-css/themes\default\assets\fonts\icons.woff2 Unexpected character ‘ ‘ (1:4)   You may need an appropriate loader to handle this file type. (Source code omitted for this binary file)</p>
+</blockquote>
+<h3 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h3><p>add the followings to your loaders config:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">test</span>:<span class="regexp">/\.(png|jpg|woff|svg|eot|ttf|woff2)$/</span>,</div><div class="line">  <span class="attr">loader</span>:<span class="string">'url-loader?limit=8192&amp;name=images/[name].[ext]'</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+]]></content>
+    
+    <summary type="html">
+    
+      Module parse failed: .. node_modules/semantic-ui-css/themes/default/assets/fonts/icons.woff2 Unexpected character &#39; &#39; (1:4) You may need an appropriate loader to handle this file type. (Source code omitted for this binary file)
+    
+    </summary>
+    
+      <category term="前端" scheme="http://www.iprogrammr.com/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+    
+      <category term="react" scheme="http://www.iprogrammr.com/tags/react/"/>
+    
+  </entry>
   
   <entry>
     <title>《重生》阅读</title>
@@ -827,34 +853,6 @@
       <category term="rails" scheme="http://www.iprogrammr.com/tags/rails/"/>
     
       <category term="联合查询" scheme="http://www.iprogrammr.com/tags/%E8%81%94%E5%90%88%E6%9F%A5%E8%AF%A2/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>动态find_by方法</title>
-    <link href="http://www.iprogrammr.com/03/20/2015/Dynamic-find-by-methods.html"/>
-    <id>http://www.iprogrammr.com/03/20/2015/Dynamic-find-by-methods.html</id>
-    <published>2015-03-20T02:21:00.000Z</published>
-    <updated>2017-07-10T03:01:41.735Z</updated>
-    
-    <content type="html"><![CDATA[<p>以下是两个<strong>find</strong>方法，我们可以把它改成<strong>find_by</strong>形式。</p>
-<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@tasks = Task.find(<span class="symbol">:all</span>, <span class="symbol">:conditions</span> =&gt; [<span class="string">'complete = ?'</span>, <span class="literal">false</span>])</div><div class="line"></div><div class="line">@tasks = Task.find(<span class="symbol">:first</span>, <span class="symbol">:conditions</span> =&gt; [<span class="string">'complete = ?'</span>, <span class="literal">false</span>], <span class="symbol">:order</span> =&gt; <span class="string">'created_at DESC'</span>)</div></pre></td></tr></table></figure>
-<p>对应的<code>find_by</code>形式为:</p>
-<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@task = Task.find_all_by_complete(<span class="literal">false</span>)</div><div class="line"></div><div class="line">@task = Task.find_by_complete(<span class="literal">false</span>, <span class="symbol">:order</span> =&gt; <span class="string">"created_at DESC"</span>)</div></pre></td></tr></table></figure>
-]]></content>
-    
-    <summary type="html">
-    
-      使用find_by进行多条件动态查询
-    
-    </summary>
-    
-      <category term="Rails" scheme="http://www.iprogrammr.com/categories/Rails/"/>
-    
-    
-      <category term="Rails" scheme="http://www.iprogrammr.com/tags/Rails/"/>
-    
-      <category term="find_by" scheme="http://www.iprogrammr.com/tags/find-by/"/>
     
   </entry>
   
